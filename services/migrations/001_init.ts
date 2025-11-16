@@ -3,16 +3,16 @@ export const INIT_SQL = `
 CREATE TABLE IF NOT EXISTS user (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   is_pro INTEGER NOT NULL DEFAULT 0,
-  pro_type TEXT,
+  pro_type TEXT,  
   pro_expiry TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT
 );
 
 -- Habits table
-CREATE TABLE IF NOT EXISTS habit (
+CREATE TABLE IF NOT EXISTS habits (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
+  name TEXT NOT NULL,
   description TEXT,
   icon TEXT,
   color TEXT,
@@ -23,14 +23,14 @@ CREATE TABLE IF NOT EXISTS habit (
 );
 
 -- Habit entries table (multiple toggles per day allowed)
-CREATE TABLE IF NOT EXISTS habit_entry (
+CREATE TABLE IF NOT EXISTS habits_entry (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   habit_id INTEGER NOT NULL,
   date TEXT NOT NULL,
   status INTEGER NOT NULL CHECK (status IN (0, 1)),
   created_at TEXT NOT NULL,
   updated_at TEXT,
-  FOREIGN KEY (habit_id) REFERENCES habit(id) ON DELETE CASCADE
+  FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
 );
 
 -- Subscription history (optional)

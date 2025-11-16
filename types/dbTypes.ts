@@ -1,12 +1,12 @@
 export type Habit = {
   id: number;
-  title: string;
+  name: string;
   description?: string;
   icon?: string;
   color?: string;
   created_at: string;
   frequency?: "daily" | "weekly" | "monthly" | "custom";
-  target?: number;
+  target?: number; // how many times to perform a habit. e.g. 3 times pushups
   active: number; // 1 active, 0 archived
 };
 
@@ -14,7 +14,7 @@ export type HabitEntry = {
   id: number;
   habit_id: number;
   date: string; // YYYY-MM-DD
-  status: 0 | 1;
+  status: 0 | 1; // checked or unchecked
   created_at: string;
   updated_at?: string;
 };
