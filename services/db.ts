@@ -25,7 +25,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // Execute the initial schema from imported SQL
     await db.execAsync(INIT_SQL);
 
-    currentDbVersion = 1;
+    currentDbVersion = DATABASE_VERSION;
   }
 
   // Future migrations can be added here:
