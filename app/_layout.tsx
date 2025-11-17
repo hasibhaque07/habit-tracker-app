@@ -56,17 +56,44 @@ export default function RootLayout() {
   // Include both route groups in the Stack
   return (
     <SQLiteProvider
-      databaseName="habitTracker.db"
+      databaseName="habitTrackerApp.db"
       onInit={migrateDbIfNeeded}
       options={{ useNewConnection: false }}
     >
       <QueryClientProvider client={queryClient}>
-        <Stack>
+        <Stack
+          screenOptions={{
+            contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
+          }}
+        >
           <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="newHabit" />
+          <Stack.Screen
+            name="newHabit"
+            // options={{
+            //   headerShown: false,
+            //   presentation: "modal",
+            //   animation: "slide_from_bottom",
+            // }}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+              animation: "slide_from_bottom",
+
+              // gestureEnabled: true,
+              // gestureDirection: "vertical",
+              // animationDuration: 300,
+            }}
+          />
           <Stack.Screen name="icon" />
-          <Stack.Screen name="more" />
+          <Stack.Screen
+            name="more"
+            options={{
+              headerShown: false,
+              // presentation: "modal",
+              animation: "slide_from_bottom",
+            }}
+          />
           {/* <Stack.Screen name="pro" /> */}
         </Stack>
       </QueryClientProvider>

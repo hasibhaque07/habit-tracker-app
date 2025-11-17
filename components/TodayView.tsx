@@ -1,4 +1,4 @@
-import { Habit } from "@/types/types";
+import { Habit } from "@/types/dbTypes";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -9,7 +9,9 @@ interface TodayViewProps {
 
 const TodayView = ({ habits }: TodayViewProps) => {
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className="mb-20">
+    //uncomment the line to see margin bottom
+    // <ScrollView showsVerticalScrollIndicator={false} className="mb-20">
+    <ScrollView showsVerticalScrollIndicator={false}>
       {habits.map((habit) => (
         <View
           key={habit.id}
@@ -18,14 +20,14 @@ const TodayView = ({ habits }: TodayViewProps) => {
           {/* Icon */}
           <View className="bg-neutral-800 rounded-2xl p-4 mr-3">
             <Ionicons
-              name={habit.icon ?? "help-outline"}
+              name={(habit.icon as any) ?? "help-outline"}
               size={24}
               color="#fff"
             />
           </View>
 
           {/* Title */}
-          <Text className="flex-1 text-white text-lg">{habit.title}</Text>
+          <Text className="flex-1 text-white text-lg">{habit.name}</Text>
 
           {/* Check Button */}
           <View

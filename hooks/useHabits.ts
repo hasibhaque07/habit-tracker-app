@@ -8,6 +8,8 @@ export const useHabits = () => {
   const db = useSQLiteContext();
   const queryClient = useQueryClient();
 
+  const t = getDateInfo();
+
   // Get all habits
   const {
     data: habits = [],
@@ -47,8 +49,8 @@ export const useHabits = () => {
       }
 
       // Use dateUtils for consistent timestamp formatting
-      const dateInfo = getDateInfo();
-      const createdAt = dateInfo.isoTimestamp || new Date().toISOString();
+
+      const createdAt = t.isoTimestamp;
 
       await db.runAsync(
         "INSERT INTO habits (name, description, icon, color, created_at, frequency, target, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",

@@ -8,6 +8,7 @@ import MonthlyView from "@/components/MonthlyView";
 import OverallView from "@/components/OverallView";
 import TodayView from "@/components/TodayView";
 import WeeklyView from "@/components/WeeklyView";
+import { useHabits } from "@/hooks/useHabits";
 import type { Habit } from "@/types/types";
 
 const mockHabits: Habit[] = [
@@ -100,7 +101,9 @@ type FilterType = (typeof FILTERS)[number];
 export default function HabitsScreen() {
   const [activeTab, setActiveTab] = useState<FilterType>("Today");
 
-  const habits: Habit[] = mockHabits;
+  const { habits } = useHabits();
+
+  //const habits: Habit[] = mockHabits;
 
   const renderContent = useMemo(() => {
     if (!habits || habits.length === 0) return null;

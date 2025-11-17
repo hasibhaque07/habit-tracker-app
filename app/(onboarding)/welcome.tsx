@@ -3,7 +3,10 @@ import { Button, Text, View } from "react-native";
 
 export default function WelcomeScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      className="bg-black"
+    >
       <Text>Welcome to Habit Tracker!</Text>
       <Button
         title="Next"
