@@ -2,7 +2,7 @@
 import { DateTime } from "luxon";
 
 export type DateInfo = {
-  now: DateTime; // Changed from 'any' to 'DateTime'
+  now: DateTime;
 
   // Basic date info
   date: string; // "YYYY-MM-DD"

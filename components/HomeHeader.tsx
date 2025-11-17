@@ -1,12 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 const HomeHeader = () => {
   return (
     <View className="flex-row justify-between items-center mb-6">
-      <Ionicons name="grid-outline" size={26} color="white" />
+      {/* <Link href="/more">
+        <Ionicons name="grid-outline" size={26} color="white" />
+      </Link> */}
+      <TouchableOpacity onPress={() => router.push("/more")}>
+        <Ionicons name="grid-outline" size={26} color="white" />
+      </TouchableOpacity>
       <Text className="text-white text-3xl font-bold">Habits</Text>
 
       <Link href="/newHabit">
