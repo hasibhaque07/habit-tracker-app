@@ -5,7 +5,7 @@ export default function WelcomeScreen() {
   return (
     <View
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      className="bg-black"
+      className="bg-black-500"
     >
       <Text>Welcome to Habit Tracker!</Text>
       <Button

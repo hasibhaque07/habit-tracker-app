@@ -4,8 +4,8 @@ import IconModal from "@/components/IconModal";
 import { useHabits } from "@/hooks/useHabits";
 import { habitColors } from "@/utils/habitColors";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -16,26 +16,59 @@ import {
 
 export default function NewHabitScreen() {
   const defaultIcon = "pulse-outline";
+  const params = useLocalSearchParams<{ habitId?: string }>();
+  const habitId = params.habitId ? parseInt(params.habitId) : undefined;
+  const isEditMode = !!habitId;
+
+  const { habits, addHabit, updateHabit } = useHabits();
+  const router = useRouter();
+
+  // Find the habit to edit if in edit mode
+  const existingHabit = isEditMode
+    ? habits.find((h) => h.id === habitId)
+    : null;
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState<string>(defaultIcon);
   const [color, setColor] = useState<string>(habitColors[0]);
   const [isIconModalVisible, setIsIconModalVisible] = useState(false);
 
-  const { addHabit } = useHabits();
-  const router = useRouter();
+  // Load existing habit data when editing
+  useEffect(() => {
+    if (existingHabit) {
+      setName(existingHabit.name || "");
+      setDescription(existingHabit.description || "");
+      setIcon(existingHabit.icon || defaultIcon);
+      setColor(existingHabit.color || habitColors[0]);
+    }
+  }, [existingHabit]);
 
   const saveHabit = () => {
     if (!name.trim()) return;
 
-    addHabit({
-      name,
-      description,
-      icon,
-      color,
-      frequency: "daily",
-      target: 1,
-    });
+    if (isEditMode && habitId) {
+      // Update existing habit
+      updateHabit({
+        id: habitId,
+        name,
+        description,
+        icon,
+        color,
+        frequency: existingHabit?.frequency || "daily",
+        target: existingHabit?.target || 1,
+      });
+    } else {
+      // Create new habit
+      addHabit({
+        name,
+        description,
+        icon,
+        color,
+        frequency: "daily",
+        target: 1,
+      });
+    }
 
     router.back();
   };
@@ -51,7 +84,7 @@ export default function NewHabitScreen() {
         </TouchableOpacity>
 
         <Text className="text-white text-2xl font-semibold ml-4">
-          New Habit
+          {isEditMode ? "Edit Habit" : "New Habit"}
         </Text>
       </View>
 
@@ -125,13 +158,148 @@ export default function NewHabitScreen() {
               isSaveEnabled ? "text-black" : "text-white"
             }`}
           >
-            Save
+            {isEditMode ? "Update" : "Save"}
           </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+// import ColorOption from "@/components/ColorOption";
+// import HabitIcon from "@/components/HabitIcon";
+// import IconModal from "@/components/IconModal";
+// import { useHabits } from "@/hooks/useHabits";
+// import { habitColors } from "@/utils/habitColors";
+// import { Ionicons } from "@expo/vector-icons";
+// import { useRouter } from "expo-router";
+// import { useState } from "react";
+// import {
+//   ScrollView,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   View,
+// } from "react-native";
+
+// export default function NewHabitScreen() {
+//   const defaultIcon = "pulse-outline";
+//   const [name, setName] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [icon, setIcon] = useState<string>(defaultIcon);
+//   const [color, setColor] = useState<string>(habitColors[0]);
+//   const [isIconModalVisible, setIsIconModalVisible] = useState(false);
+
+//   const { addHabit } = useHabits();
+//   const router = useRouter();
+
+//   const saveHabit = () => {
+//     if (!name.trim()) return;
+
+//     addHabit({
+//       name,
+//       description,
+//       icon,
+//       color,
+//       frequency: "daily",
+//       target: 1,
+//     });
+
+//     router.back();
+//   };
+
+//   const isSaveEnabled = name.trim().length > 0;
+
+//   return (
+//     <View className="flex-1 bg-black">
+//       {/* HEADER */}
+//       <View className="flex-row items-center px-5 pt-12 pb-5">
+//         <TouchableOpacity onPress={() => router.back()}>
+//           <Ionicons name="close" size={30} color="white" />
+//         </TouchableOpacity>
+
+//         <Text className="text-white text-2xl font-semibold ml-4">
+//           New Habit
+//         </Text>
+//       </View>
+
+//       <ScrollView
+//         className="flex-1 px-5"
+//         contentContainerStyle={{ paddingBottom: 120 }}
+//       >
+//         {/* ICON */}
+//         <View className="items-center mb-6">
+//           <TouchableOpacity
+//             onPress={() => setIsIconModalVisible(true)}
+//             className="w-32 h-32 rounded-full bg-neutral-900 items-center justify-center"
+//           >
+//             <HabitIcon name={icon} size={60} />
+//           </TouchableOpacity>
+//         </View>
+
+//         {/* NAME */}
+//         <Text className="text-white mb-2">Name</Text>
+//         <TextInput
+//           className="bg-neutral-900 p-3 rounded-xl text-white mb-5"
+//           placeholder="Enter habit name"
+//           placeholderTextColor="#777"
+//           value={name}
+//           onChangeText={setName}
+//         />
+
+//         {/* DESCRIPTION */}
+//         <Text className="text-white mb-2">Description</Text>
+//         <TextInput
+//           className="bg-neutral-900 p-3 rounded-xl text-white mb-5"
+//           placeholder="Optional"
+//           placeholderTextColor="#777"
+//           value={description}
+//           onChangeText={setDescription}
+//         />
+
+//         {/* COLOR */}
+//         <Text className="text-white mb-3">Color</Text>
+
+//         <View className="flex-row flex-wrap mb-5">
+//           {habitColors.map((c) => (
+//             <ColorOption
+//               key={c}
+//               color={c}
+//               selected={c === color}
+//               onPress={() => setColor(c)}
+//             />
+//           ))}
+//         </View>
+
+//         {/* ICON MODAL */}
+//         <IconModal
+//           visible={isIconModalVisible}
+//           onClose={() => setIsIconModalVisible(false)}
+//           onSelect={(selectedIcon) => setIcon(selectedIcon)}
+//         />
+//       </ScrollView>
+
+//       {/* SAVE BUTTON (STICKY BOTTOM) */}
+//       <View className="absolute bottom-0 w-full px-5 pb-8">
+//         <TouchableOpacity
+//           onPress={saveHabit}
+//           disabled={!isSaveEnabled}
+//           className={`py-4 rounded-xl ${
+//             isSaveEnabled ? "bg-white" : "bg-neutral-800"
+//           }`}
+//         >
+//           <Text
+//             className={`text-center text-lg font-semibold ${
+//               isSaveEnabled ? "text-black" : "text-white"
+//             }`}
+//           >
+//             Save
+//           </Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// }
 
 // import ColorOption from "@/components/ColorOption";
 // import HabitIcon from "@/components/HabitIcon";

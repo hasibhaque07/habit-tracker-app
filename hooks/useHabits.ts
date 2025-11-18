@@ -177,6 +177,7 @@ export const useHabits = () => {
     isLoading,
     error,
     refetch,
+
     addHabit: (data: {
       name: string;
       description?: string;

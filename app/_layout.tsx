@@ -70,18 +70,13 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="newHabit"
-            // options={{
-            //   headerShown: false,
-            //   presentation: "modal",
-            //   animation: "slide_from_bottom",
-            // }}
             options={{
               headerShown: false,
-              presentation: "modal",
+              presentation: "transparentModal",
               animation: "slide_from_bottom",
-
               // gestureEnabled: true,
               // gestureDirection: "vertical",
+              // fullScreenGestureEnabled: true,
               // animationDuration: 300,
             }}
           />
@@ -90,8 +85,12 @@ export default function RootLayout() {
             name="more"
             options={{
               headerShown: false,
-              // presentation: "modal",
+              presentation: "transparentModal",
               animation: "slide_from_bottom",
+              // gestureEnabled: true,
+              // gestureDirection: "vertical",
+              // fullScreenGestureEnabled: true,
+              // animationDuration: 300,
             }}
           />
           {/* <Stack.Screen name="pro" /> */}
