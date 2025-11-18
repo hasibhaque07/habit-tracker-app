@@ -49,8 +49,7 @@ export default function TodayView({ habits }: TodayViewProps) {
   };
 
   const handleReorder = () => {
-    // router.push("/habits/reorder");
-    console.log("reordered");
+    router.push("/reorder");
   };
 
   return (
