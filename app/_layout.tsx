@@ -6,6 +6,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const [loading, setLoading] = useState(true);
@@ -47,55 +48,64 @@ export default function RootLayout() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" />
+        </View>
+      </GestureHandlerRootView>
     );
   }
 
   // Include both route groups in the Stack
   return (
-    <SQLiteProvider
-      databaseName="habitTrackerApp.db"
-      onInit={migrateDbIfNeeded}
-      options={{ useNewConnection: false }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <Stack
-          screenOptions={{
-            contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
-          }}
-        >
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="newHabit"
-            options={{
-              headerShown: false,
-              presentation: "transparentModal",
-              animation: "slide_from_bottom",
-              // gestureEnabled: true,
-              // gestureDirection: "vertical",
-              // fullScreenGestureEnabled: true,
-              // animationDuration: 300,
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SQLiteProvider
+        databaseName="habitTrackerApp1.db"
+        onInit={migrateDbIfNeeded}
+        options={{ useNewConnection: false }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
             }}
-          />
-          <Stack.Screen name="icon" />
-          <Stack.Screen
-            name="more"
-            options={{
-              headerShown: false,
-              presentation: "transparentModal",
-              animation: "slide_from_bottom",
-              // gestureEnabled: true,
-              // gestureDirection: "vertical",
-              // fullScreenGestureEnabled: true,
-              // animationDuration: 300,
-            }}
-          />
-          {/* <Stack.Screen name="pro" /> */}
-        </Stack>
-      </QueryClientProvider>
-    </SQLiteProvider>
+          >
+            <Stack.Screen
+              name="(onboarding)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="newHabit"
+              options={{
+                headerShown: false,
+                presentation: "transparentModal",
+                animation: "slide_from_bottom",
+              }}
+            />
+            <Stack.Screen name="icon" />
+            <Stack.Screen
+              name="more"
+              options={{
+                headerShown: false,
+                presentation: "transparentModal",
+                animation: "slide_from_bottom",
+              }}
+            />
+            {/* <Stack.Screen name="pro" /> */}
+            <Stack.Screen
+              name="reorder"
+              options={{
+                headerShown: false,
+                presentation: "transparentModal",
+                animation: "slide_from_bottom",
+              }}
+            />
+          </Stack>
+        </QueryClientProvider>
+      </SQLiteProvider>
+    </GestureHandlerRootView>
   );
 }

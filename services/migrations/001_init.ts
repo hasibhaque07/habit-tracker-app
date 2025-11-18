@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS habits (
   created_at TEXT NOT NULL,
   frequency TEXT CHECK (frequency IN ('daily', 'weekly', 'monthly', 'custom')),
   target INTEGER,
-  active INTEGER NOT NULL DEFAULT 1
+  active INTEGER NOT NULL DEFAULT 1,
+  "order" INTEGER NOT NULL DEFAULT 0
 );
 
 -- Habit entries table (multiple toggles per day allowed)

@@ -10,7 +10,7 @@ export const useHabits = () => {
 
   const t = getDateInfo();
 
-  // Get all habits
+  // Get all habits - ORDER BY order field
   const {
     data: habits = [],
     isLoading,
@@ -20,7 +20,7 @@ export const useHabits = () => {
     queryKey: ["habits"],
     queryFn: async () => {
       const rows = await db.getAllAsync<Habit>(
-        "SELECT * FROM habits WHERE active = 1 ORDER BY id DESC"
+        'SELECT * FROM habits WHERE active = 1 ORDER BY "order" ASC, id DESC'
       );
       return rows;
     },
@@ -48,12 +48,16 @@ export const useHabits = () => {
         return;
       }
 
-      // Use dateUtils for consistent timestamp formatting
-
       const createdAt = t.isoTimestamp;
 
+      // Get the maximum order value to set new habit at the end
+      const maxOrderResult = await db.getFirstAsync<{ max_order: number }>(
+        'SELECT COALESCE(MAX("order"), 0) as max_order FROM habits WHERE active = 1'
+      );
+      const newOrder = (maxOrderResult?.max_order ?? 0) + 1;
+
       await db.runAsync(
-        "INSERT INTO habits (name, description, icon, color, created_at, frequency, target, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        'INSERT INTO habits (name, description, icon, color, created_at, frequency, target, active, "order") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           name,
           description ?? "",
@@ -63,6 +67,7 @@ export const useHabits = () => {
           frequency ?? "daily",
           target ?? 0,
           1, // active = 1
+          newOrder,
         ]
       );
     },
@@ -146,6 +151,64 @@ export const useHabits = () => {
     },
   });
 
+  // Reorder habits - takes array of habit IDs in new order
+  // const reorderHabitsMutation = useMutation({
+  //   mutationFn: async (habitIds: number[]) => {
+  //     // Update order for each habit based on its position in the array
+  //     for (let i = 0; i < habitIds.length; i++) {
+  //       await db.runAsync('UPDATE habits SET "order" = ? WHERE id = ?', [
+  //         i + 1,
+  //         habitIds[i],
+  //       ]);
+  //     }
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["habits"] });
+  //   },
+  //   onError: () => {
+  //     Alert.alert("Error", "Failed to reorder habits. Try again.");
+  //   },
+  // });
+
+  // Reorder habits - takes array of habit IDs in new order
+  const reorderHabitsMutation = useMutation({
+    mutationFn: async (habitIds: number[]) => {
+      if (!habitIds || habitIds.length === 0) {
+        return;
+      }
+
+      // First, ensure the order column exists
+      try {
+        await db.execAsync(
+          'ALTER TABLE habits ADD COLUMN "order" INTEGER NOT NULL DEFAULT 0'
+        );
+      } catch (error: any) {
+        // Column might already exist, that's okay
+        if (!error?.message?.includes("duplicate column")) {
+          console.log("Order column already exists or error:", error);
+        }
+      }
+
+      // Update order for each habit
+      for (let i = 0; i < habitIds.length; i++) {
+        await db.runAsync('UPDATE habits SET "order" = ? WHERE id = ?', [
+          i + 1,
+          habitIds[i],
+        ]);
+      }
+    },
+    onSuccess: () => {
+      // Delay invalidation slightly to allow UI animation to complete
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["habits"] });
+      }, 200);
+    },
+    onError: (error) => {
+      console.error("Reorder error:", error);
+      Alert.alert("Error", "Failed to reorder habits. Try again.");
+    },
+  });
+
   // Archive habit (set active = 0)
   const archiveHabitMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -177,7 +240,6 @@ export const useHabits = () => {
     isLoading,
     error,
     refetch,
-
     addHabit: (data: {
       name: string;
       description?: string;
@@ -195,6 +257,8 @@ export const useHabits = () => {
       frequency?: "daily" | "weekly" | "monthly" | "custom";
       target?: number;
     }) => updateHabitMutation.mutate(data),
+    reorderHabits: (habitIds: number[]) =>
+      reorderHabitsMutation.mutate(habitIds),
     archiveHabit: (id: number) => archiveHabitMutation.mutate(id),
     deleteHabit: (id: number) => deleteHabitMutation.mutate(id),
   };

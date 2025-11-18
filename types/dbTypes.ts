@@ -8,6 +8,7 @@ export type Habit = {
   frequency?: "daily" | "weekly" | "monthly" | "custom";
   target?: number; // how many times to perform a habit. e.g. 3 times pushups
   active: number; // 1 active, 0 archived
+  order?: number; // order for sorting habits
 };
 
 export type HabitEntry = {
