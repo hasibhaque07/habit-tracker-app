@@ -32,10 +32,10 @@ const ConfirmSheet = ({
         </View>
 
         <Pressable
-          className="bg-blue-600 p-4 rounded-2xl mb-3"
+          className="bg-white p-4 rounded-2xl mb-3"
           onPress={onConfirm}
         >
-          <Text className="text-center text-white font-semibold text-lg">
+          <Text className="text-center text-black font-semibold text-lg">
             {confirmText}
           </Text>
         </Pressable>
