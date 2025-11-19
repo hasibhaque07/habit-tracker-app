@@ -1,12 +1,18 @@
 // components/TodayView.tsx
 import HabitActionSheet from "@/components/HabitActionSheet";
 import { useHabitActions } from "@/hooks/useHabitActions";
+import {
+  HabitWithEntry,
+  useHabitEntriesByPeriod,
+} from "@/hooks/useHabitEntriesByPeriod";
 import { useHabits } from "@/hooks/useHabits";
+import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
 import { Habit } from "@/types/dbTypes";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   Text,
@@ -15,10 +21,10 @@ import {
 } from "react-native";
 
 interface TodayViewProps {
-  habits: Habit[];
+  habits?: any[]; // Keep for backward compatibility, but we'll use hook data
 }
 
-export default function TodayView({ habits }: TodayViewProps) {
+export default function TodayView({ habits: _habits }: TodayViewProps) {
   const router = useRouter();
   const {
     selectedHabit,
@@ -32,6 +38,18 @@ export default function TodayView({ habits }: TodayViewProps) {
   } = useHabitActions();
 
   const { archiveHabit, deleteHabit } = useHabits();
+  const { toggleCheck } = useToggleHabitEntry();
+
+  // Fetch habits with today's entry status - explicitly type as HabitWithEntry[]
+  const {
+    data: habitsWithEntries,
+    isLoading,
+    error,
+  } = useHabitEntriesByPeriod("today");
+
+  // Type assertion to ensure TypeScript knows this is HabitWithEntry[]
+  const habitsData: HabitWithEntry[] =
+    (habitsWithEntries as HabitWithEntry[]) || [];
 
   const handleArchive = (habit: Habit) => {
     archiveHabit(habit.id);
@@ -52,37 +70,85 @@ export default function TodayView({ habits }: TodayViewProps) {
     router.push("/reorder");
   };
 
+  // Handle checkbox press (only checkbox, not the whole card)
+  const handleCheckboxPress = (habit: HabitWithEntry, e: any) => {
+    e.stopPropagation(); // Prevent card press
+    toggleCheck(habit.id); // Toggle today's entry
+  };
+
+  // Handle card press (for navigation - to be implemented later)
+  const handleCardPress = (habit: HabitWithEntry) => {
+    // TODO: Navigate to habit detail screen
+    // router.push({ pathname: "/habitDetail", params: { habitId: habit.id.toString() } });
+  };
+
+  // Handle long press (for action sheet) - cast to Habit since HabitWithEntry extends Habit
+  const handleCardLongPress = (habit: HabitWithEntry) => {
+    openActions(habit as Habit);
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-white">Error loading habits</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1">
-      <FlatList
-        data={habits}
-        keyExtractor={(item) => item.id.toString()}
+      <FlatList<HabitWithEntry>
+        data={habitsData}
+        keyExtractor={(item, index) => `habit-${item.id}-${index}`}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 30 }}
-        renderItem={({ item }) => (
-          <View className="flex-row items-center justify-between bg-neutral-900 rounded-2xl p-4 mb-4">
-            <TouchableOpacity
-              onLongPress={() => openActions(item)}
-              className="flex-row items-center flex-1"
-            >
-              <View className="bg-neutral-800 rounded-2xl p-4 mr-3">
-                <Ionicons
-                  name={(item.icon as any) ?? "help-outline"}
-                  size={24}
-                  color="#fff"
-                />
-              </View>
-              <Text className="flex-1 text-white text-lg">{item.name}</Text>
-            </TouchableOpacity>
+        renderItem={({ item }) => {
+          const isChecked = item.entry_status === 1;
+          const checkboxColor = isChecked ? item.color || "#fff" : "#404040"; // Gray when unchecked
+          const checkmarkColor = isChecked ? "white" : "#666666"; // Darker gray checkmark when unchecked
 
-            <Pressable
-              className="p-3 rounded-2xl"
-              style={{ backgroundColor: item.color }}
-            >
-              <Ionicons name="checkmark" size={18} color="white" />
-            </Pressable>
-          </View>
-        )}
+          return (
+            <View className="flex-row items-center justify-between bg-neutral-900 rounded-2xl p-4 mb-4">
+              <TouchableOpacity
+                onPress={() => handleCardPress(item)}
+                onLongPress={() => handleCardLongPress(item)}
+                className="flex-row items-center flex-1"
+                activeOpacity={0.7}
+              >
+                <View className="bg-neutral-800 rounded-2xl p-4 mr-3">
+                  <Ionicons
+                    name={(item.icon as any) ?? "help-outline"}
+                    size={24}
+                    color="#fff"
+                  />
+                </View>
+                <Text className="flex-1 text-white text-lg">{item.name}</Text>
+              </TouchableOpacity>
+
+              {/* Checkbox - only this is pressable for toggle */}
+              <Pressable
+                onPress={(e) => handleCheckboxPress(item, e)}
+                className="rounded-2xl items-center justify-center"
+                style={{
+                  backgroundColor: checkboxColor,
+                  width: 48,
+                  height: 48,
+                }}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="checkmark" size={18} color={checkmarkColor} />
+              </Pressable>
+            </View>
+          );
+        }}
       />
 
       <HabitActionSheet
