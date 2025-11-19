@@ -1,8 +1,17 @@
 // components/IconModal.tsx
-import { habitIcons } from "@/utils/habitIcons";
+import { iconCategories, uniqueIcons } from "@/utils/iconCategories";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface IconModalProps {
   visible: boolean;
@@ -15,6 +24,83 @@ export default function IconModal({
   onClose,
   onSelect,
 }: IconModalProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTab, setSelectedTab] = useState<"Icon" | "Emoji">("Icon");
+
+  // Filter icons based on search query
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return iconCategories;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return iconCategories
+      .map((category) => ({
+        ...category,
+        icons: category.icons.filter((icon) =>
+          icon.toLowerCase().includes(query)
+        ),
+      }))
+      .filter((category) => category.icons.length > 0);
+  }, [searchQuery]);
+
+  // Filter all icons for search (flat list)
+  const filteredAllIcons = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return [];
+    }
+    const query = searchQuery.toLowerCase();
+    return uniqueIcons.filter((icon) => icon.toLowerCase().includes(query));
+  }, [searchQuery]);
+
+  const handleIconSelect = (iconName: string) => {
+    onSelect(iconName);
+    onClose();
+    // Reset search when closing
+    setSearchQuery("");
+  };
+
+  // Render icon item with unique key (for search view)
+  const renderIconItem = (icon: string, index: number) => (
+    <TouchableOpacity
+      key={`icon-${icon}-${index}`}
+      className="items-center justify-center"
+      style={{ width: "14.28%", paddingVertical: 12, paddingHorizontal: 4 }}
+      onPress={() => handleIconSelect(icon)}
+    >
+      <Ionicons name={icon as any} size={28} color="#fff" />
+    </TouchableOpacity>
+  );
+
+  // Render icon item within category (with category prefix for unique key)
+  const renderCategoryIcon = (
+    icon: string,
+    index: number,
+    categoryName: string
+  ) => (
+    <TouchableOpacity
+      key={`${categoryName}-${icon}-${index}`}
+      className="items-center justify-center"
+      style={{ width: "14.28%", paddingVertical: 12, paddingHorizontal: 4 }}
+      onPress={() => handleIconSelect(icon)}
+    >
+      <Ionicons name={icon as any} size={28} color="#fff" />
+    </TouchableOpacity>
+  );
+
+  const renderCategory = ({ item }: { item: (typeof iconCategories)[0] }) => (
+    <View className="mb-6">
+      <Text className="text-white text-lg font-semibold mb-3 px-1">
+        {item.name}
+      </Text>
+      <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
+        {item.icons.map((icon, index) =>
+          renderCategoryIcon(icon, index, item.name)
+        )}
+      </View>
+    </View>
+  );
+
   return (
     <Modal
       visible={visible}
@@ -23,38 +109,110 @@ export default function IconModal({
       onRequestClose={onClose}
     >
       {/* Background overlay */}
-      <View className="flex-1 bg-black/70 justify-end">
-        {/* Modal content */}
-        <View className="bg-neutral-900 rounded-t-2xl p-5 h-[60%]">
-          <Text className="text-white text-xl font-semibold mb-4">
-            Select an Icon
-          </Text>
+      <Pressable className="flex-1 bg-black/70" onPress={onClose}>
+        {/* Modal content - Full height */}
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          className="bg-neutral-900 rounded-t-3xl flex-1"
+          style={{ marginTop: 0 }}
+        >
+          {/* Header */}
+          <View className="flex-row items-center px-5 pt-12 pb-4">
+            <TouchableOpacity onPress={onClose}>
+              <Ionicons name="arrow-back" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
 
-          <ScrollView>
-            <View className="flex-row flex-wrap">
-              {habitIcons.map((icon) => (
-                <TouchableOpacity
-                  key={icon}
-                  className="w-[20%] items-center p-4"
-                  onPress={() => {
-                    onSelect(icon);
-                    onClose();
-                  }}
-                >
-                  <Ionicons name={icon as any} size={35} color="white" />
+          {/* Segmented Control */}
+          <View className="flex-row px-5 mb-4">
+            <TouchableOpacity
+              onPress={() => setSelectedTab("Icon")}
+              className={`flex-1 py-3 rounded-xl mr-2 ${
+                selectedTab === "Icon" ? "bg-neutral-800" : "bg-neutral-900"
+              }`}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  selectedTab === "Icon" ? "text-white" : "text-neutral-400"
+                }`}
+              >
+                Icon
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedTab("Emoji")}
+              className={`flex-1 py-3 rounded-xl ml-2 ${
+                selectedTab === "Emoji" ? "bg-neutral-800" : "bg-neutral-900"
+              }`}
+            >
+              <Text
+                className={`text-center font-semibold ${
+                  selectedTab === "Emoji" ? "text-white" : "text-neutral-400"
+                }`}
+              >
+                Emoji
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Search Bar */}
+          <View className="px-5 mb-4">
+            <View className="flex-row items-center bg-neutral-800 rounded-xl px-4 py-3">
+              <Ionicons name="search-outline" size={20} color="#777" />
+              <TextInput
+                className="flex-1 text-white ml-3"
+                placeholder="Type a search term"
+                placeholderTextColor="#777"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchQuery("")}>
+                  <Ionicons name="close-circle" size={20} color="#777" />
                 </TouchableOpacity>
-              ))}
+              )}
             </View>
-          </ScrollView>
+          </View>
 
-          <TouchableOpacity
-            className="bg-neutral-800 py-3 rounded-xl mt-4"
-            onPress={onClose}
+          {/* Icons List - Scrollable */}
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 50 }}
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
           >
-            <Text className="text-center text-white">Close</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            {selectedTab === "Icon" ? (
+              searchQuery.trim() ? (
+                // Show flat list when searching
+                <View
+                  className="flex-row flex-wrap"
+                  style={{ marginHorizontal: -4 }}
+                >
+                  {filteredAllIcons.map((icon, index) =>
+                    renderIconItem(icon, index)
+                  )}
+                </View>
+              ) : (
+                // Show categorized list when not searching
+                <FlatList
+                  data={filteredCategories}
+                  renderItem={renderCategory}
+                  keyExtractor={(item) => item.name}
+                  scrollEnabled={false}
+                  nestedScrollEnabled={true}
+                />
+              )
+            ) : (
+              // Emoji section (placeholder for now)
+              <View className="items-center justify-center py-20">
+                <Text className="text-neutral-400 text-lg">
+                  Emoji feature coming soon
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
