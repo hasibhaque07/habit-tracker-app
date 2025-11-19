@@ -9,8 +9,8 @@ import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
 import { Habit } from "@/types/dbTypes";
 import { getDateInfo } from "@/utils/dateUtils";
 import { Ionicons } from "@expo/vector-icons";
-import { DateTime } from "luxon";
 import { useFocusEffect, useRouter } from "expo-router";
+import { DateTime } from "luxon";
 import React, { useCallback } from "react";
 import {
   ActivityIndicator,
@@ -41,12 +41,7 @@ export default function WeeklyView() {
   const { archiveHabit, deleteHabit } = useHabits();
   const { toggleCheck } = useToggleHabitEntry();
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useHabitEntriesByPeriod("weekly");
+  const { data, isLoading, error, refetch } = useHabitEntriesByPeriod("weekly");
   const weeklyData: HabitWithWeeklyEntries[] =
     (data as HabitWithWeeklyEntries[]) || [];
 
@@ -79,7 +74,11 @@ export default function WeeklyView() {
     // Placeholder for future detail screen navigation
   };
 
-  const handleDayToggle = (habitId: number, date: string, disabled: boolean) => {
+  const handleDayToggle = (
+    habitId: number,
+    date: string,
+    disabled: boolean
+  ) => {
     if (disabled) return;
     toggleCheck(habitId, date);
   };
