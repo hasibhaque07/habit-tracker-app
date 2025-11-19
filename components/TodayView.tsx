@@ -113,7 +113,7 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
         renderItem={({ item }) => {
           const isChecked = item.entry_status === 1;
           const checkboxColor = isChecked ? item.color || "#fff" : "#404040"; // Gray when unchecked
-          const showCheckmark = isChecked;
+          const checkmarkColor = isChecked ? "white" : "#666666"; // Darker gray checkmark when unchecked
 
           return (
             <View className="flex-row items-center justify-between bg-neutral-900 rounded-2xl p-4 mb-4">
@@ -144,9 +144,7 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
                 }}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                {showCheckmark && (
-                  <Ionicons name="checkmark" size={18} color="white" />
-                )}
+                <Ionicons name="checkmark" size={18} color={checkmarkColor} />
               </Pressable>
             </View>
           );
