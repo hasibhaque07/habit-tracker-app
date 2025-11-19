@@ -9,8 +9,9 @@ import { useHabits } from "@/hooks/useHabits";
 import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
 import { Habit } from "@/types/dbTypes";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+
+import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -45,7 +46,15 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
     data: habitsWithEntries,
     isLoading,
     error,
+    refetch,
   } = useHabitEntriesByPeriod("today");
+
+  // Refetch when screen comes into focus (e.g., returning from edit/reorder screens)
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   // Type assertion to ensure TypeScript knows this is HabitWithEntry[]
   const habitsData: HabitWithEntry[] =
