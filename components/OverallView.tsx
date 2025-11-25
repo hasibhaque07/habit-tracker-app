@@ -1,21 +1,21 @@
 // OverallHeatmap.tsx
-import { useHeatmapOverall } from "@/hooks/useOverallHeatmap"; // your hook
+import { useHeatmapOverall } from "@/hooks/useOverallHeatmap";
 import { useToggleHabitEntry } from "@/hooks/useToggle";
 import { getDateInfo } from "@/utils/dateUtils";
 import { Ionicons } from "@expo/vector-icons";
-import { DateTime } from "luxon";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { FlashList } from "@shopify/flash-list";
+import React, { useCallback, useMemo } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
-// Small reusable types from your data shape
+// -------------------
+// Types
+// -------------------
 type OverallHabit = {
   id: number;
   name: string;
@@ -26,16 +26,48 @@ type OverallHabit = {
   target?: number | null;
   active: number;
   order: number;
-  // weeks: array of week-start ISO strings (yyyy-MM-dd)
-  weeks: string[];
-  // entries: rows per week, each is array of 7 statuses (Mon..Sun)
+  weeks: string[]; // week-start ISO strings (yyyy-MM-dd)
   entries: (0 | 1 | null)[][];
 };
 
 const DEFAULT_SQUARE = 12;
 const SQUARE_GAP = 3;
+const DAYS = [0, 1, 2, 3, 4, 5, 6]; // Monday..Sunday indices for mapping
 
-// Heatmap cell (memoized)
+// -------------------
+// Tiny ISO helpers (yyyy-MM-dd)
+// -------------------
+const parseIso = (iso: string) => {
+  const [y, m, d] = iso.split("-").map((s) => parseInt(s, 10));
+  return new Date(y, m - 1, d);
+};
+
+const formatIso = (date: Date) => {
+  const y = date.getFullYear();
+  const m = (date.getMonth() + 1).toString().padStart(2, "0");
+  const d = date.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+const addDaysIso = (iso: string, days: number) => {
+  const dt = parseIso(iso);
+  dt.setDate(dt.getDate() + days);
+  return formatIso(dt);
+};
+
+const startOfWeekIso = (iso: string) => {
+  // Monday-based week start
+  const dt = parseIso(iso);
+  const jsDay = dt.getDay(); // 0 (Sun) .. 6 (Sat)
+  const isoWeekday = jsDay === 0 ? 7 : jsDay; // Monday=1..Sunday=7
+  const delta = isoWeekday - 1;
+  dt.setDate(dt.getDate() - delta);
+  return formatIso(dt);
+};
+
+// -------------------
+// HeatmapCell (memoized, tiny)
+// -------------------
 const HeatmapCell = React.memo(
   ({
     size,
@@ -73,218 +105,182 @@ const HeatmapCell = React.memo(
       />
     );
   },
-  (prev, next) =>
-    prev.size === next.size &&
-    prev.status === next.status &&
-    prev.isToday === next.isToday &&
-    prev.color === next.color
+  (a, b) =>
+    a.size === b.size &&
+    a.status === b.status &&
+    a.isToday === b.isToday &&
+    a.color === b.color
 );
-
 HeatmapCell.displayName = "HeatmapCell";
 
-// Component rendering one habit row (name + horizontal weeks scroll)
-const HabitRow = React.memo(
-  ({
-    habit,
-    squareSize,
-    todayIso,
-    onToggleDay,
-  }: {
-    habit: OverallHabit;
-    squareSize: number;
-    todayIso: string;
-    onToggleDay: (
-      habitId: number,
-      dateIso: string,
-      curStatus: 0 | 1 | null
-    ) => void;
-  }) => {
-    const scrollRef = useRef<ScrollView | null>(null);
+// -------------------
+// HabitRow (memoized shallowly) - uses horizontal FlashList for weeks
+// -------------------
+const HabitRow = React.memo(function HabitRow({
+  habit,
+  squareSize,
+  todayIso,
+  onToggleDay,
+}: {
+  habit: OverallHabit;
+  squareSize: number;
+  todayIso: string;
+  onToggleDay: (
+    habitId: number,
+    dateIso: string,
+    curStatus: 0 | 1 | null
+  ) => void;
+}) {
+  // compute todayWeekStart + day index once
+  const todayWeekStart = useMemo(() => startOfWeekIso(todayIso), [todayIso]);
+  const todayDayIdx = useMemo(() => {
+    const d = parseIso(todayIso).getDay(); // 0..6 (Sun..Sat)
+    return d === 0 ? 6 : d - 1; // convert to Monday-based 0..6
+  }, [todayIso]);
 
-    // Scroll to end when weeks length changes (to show newest weeks)
-    useEffect(() => {
-      // small delay for layout
-      requestAnimationFrame(() => {
-        scrollRef.current?.scrollToEnd({ animated: false });
-      });
-    }, [habit.weeks.length]);
+  // today's status (cheap)
+  const todayStatus = useMemo(() => {
+    const wi = habit.weeks.indexOf(todayWeekStart);
+    if (wi >= 0) return habit.entries?.[wi]?.[todayDayIdx] ?? null;
+    return null;
+  }, [habit.entries, habit.weeks, todayWeekStart, todayDayIdx]);
 
-    // Helper to compute cell date iso for weekIndex/dayIndex
-    const dateFor = useCallback((weekStartIso: string, dayIndex: number) => {
-      return DateTime.fromISO(weekStartIso)
-        .plus({ days: dayIndex })
-        .toFormat("yyyy-MM-dd");
-    }, []);
+  // Render a vertical column for a single week (7 cells)
+  const renderWeek = useCallback(
+    ({
+      item: weekStart,
+      index: weekIndex,
+    }: {
+      item: string;
+      index: number;
+    }) => {
+      const weekStatuses = habit.entries?.[weekIndex] ?? Array(7).fill(null);
+      return (
+        <View
+          key={`${habit.id}-${weekStart}-${weekIndex}`}
+          style={{
+            flexDirection: "column",
+            marginRight: SQUARE_GAP,
+            alignItems: "center",
+          }}
+        >
+          {DAYS.map((dayIndex) => {
+            const status = (weekStatuses && weekStatuses[dayIndex]) ?? null;
+            const dateIso = addDaysIso(weekStart, dayIndex);
+            const isToday = dateIso === todayIso;
+            return (
+              <HeatmapCell
+                key={`${habit.id}-${weekStart}-${dayIndex}`}
+                size={squareSize}
+                status={status}
+                isToday={isToday}
+                color={habit.color ?? "#fff"}
+                onPress={() => onToggleDay(habit.id, dateIso, status)}
+                accessibilityLabel={`${habit.name} ${dateIso} status ${String(
+                  status
+                )}`}
+              />
+            );
+          })}
+        </View>
+      );
+    },
+    [habit.id, habit.color, habit.entries, squareSize, onToggleDay, todayIso]
+  );
 
-    return (
-      <TouchableOpacity
-        activeOpacity={0.95}
-        style={{
-          backgroundColor: "#0f0f0f",
-          borderRadius: 14,
-          padding: 12,
-          marginBottom: 12,
-        }}
+  const weekKeyExtractor = useCallback((w: string) => w, []);
+
+  // compute initialScrollIndex to show newest week (last)
+  const initialWeekIndex =
+    habit.weeks.length > 0 ? Math.max(0, habit.weeks.length - 1) : 0;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.95}
+      style={{
+        backgroundColor: "#0f0f0f",
+        borderRadius: 14,
+        padding: 12,
+        marginBottom: 12,
+      }}
+    >
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
       >
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 8,
+            backgroundColor: "#151515",
+            padding: 8,
+            borderRadius: 10,
+            marginRight: 8,
           }}
         >
-          <View
-            style={{
-              backgroundColor: "#151515",
-              padding: 8,
-              borderRadius: 10,
-              marginRight: 8,
-            }}
-          >
-            <Ionicons
-              name={(habit.icon as any) ?? "help-outline"}
-              size={18}
-              color="#fff"
-            />
-          </View>
-
-          <Text
-            numberOfLines={1}
-            style={{ color: "white", flex: 1, fontSize: 14 }}
-          >
-            {habit.name}
-          </Text>
-
-          {/* Quick today checkbox (optional): toggles today's date in-place */}
-          <Pressable
-            onPress={() => {
-              // find index of today's week + day index
-              const todayDt = DateTime.fromISO(todayIso);
-              const todayWeekStart = todayDt
-                .startOf("week")
-                .toFormat("yyyy-MM-dd");
-              const weekIndex = habit.weeks.indexOf(todayWeekStart);
-              if (weekIndex >= 0) {
-                const dayIndex = todayDt.weekday - 1;
-                const curStatus =
-                  habit.entries?.[weekIndex]?.[dayIndex] ?? null;
-                onToggleDay(habit.id, todayIso, curStatus);
-              } else {
-                // If today's week isn't present, compute date and toggle using todayIso
-                const curStatus = null;
-                onToggleDay(habit.id, todayIso, curStatus);
-              }
-            }}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: (() => {
-                // find today's status to set color
-                const todayDt = DateTime.fromISO(todayIso);
-                const todayWeekStart = todayDt
-                  .startOf("week")
-                  .toFormat("yyyy-MM-dd");
-                const weekIndex = habit.weeks.indexOf(todayWeekStart);
-                const dayIndex = todayDt.weekday - 1;
-                const todayStatus =
-                  weekIndex >= 0
-                    ? habit.entries?.[weekIndex]?.[dayIndex]
-                    : null;
-                return todayStatus === 1 ? habit.color || "#fff" : "#404040";
-              })(),
-            }}
-          >
-            <Ionicons name="checkmark" size={14} color="#fff" />
-          </Pressable>
+          <Ionicons
+            name={(habit.icon as any) ?? "help-outline"}
+            size={18}
+            color="#fff"
+          />
         </View>
 
-        {/* Grid: horizontal scroll of week columns */}
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingRight: 12 }}
+        <Text
+          numberOfLines={1}
+          style={{ color: "white", flex: 1, fontSize: 14 }}
         >
-          <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-            {habit.weeks.map((weekStart, weekIndex) => {
-              const weekStatuses =
-                habit.entries?.[weekIndex] ?? Array(7).fill(null);
-              return (
-                <View
-                  key={`week-${habit.id}-${weekStart}-${weekIndex}`}
-                  style={{
-                    flexDirection: "column",
-                    marginRight: SQUARE_GAP,
-                    alignItems: "center",
-                  }}
-                >
-                  {Array.from({ length: 7 }).map((_, dayIndex) => {
-                    const status =
-                      (weekStatuses && weekStatuses[dayIndex]) ?? null;
-                    const dateIso = dateFor(weekStart, dayIndex);
-                    const isToday = dateIso === todayIso;
+          {habit.name}
+        </Text>
 
-                    return (
-                      <HeatmapCell
-                        key={`${habit.id}-${weekStart}-${dayIndex}`}
-                        size={squareSize}
-                        status={status}
-                        isToday={isToday}
-                        color={habit.color ?? "#fff"}
-                        onPress={() => onToggleDay(habit.id, dateIso, status)}
-                        accessibilityLabel={`${habit.name} ${dateIso} status ${String(status)}`}
-                      />
-                    );
-                  })}
-                </View>
-              );
-            })}
+        <Pressable
+          onPress={() => {
+            const wkStart = todayWeekStart;
+            const wi = habit.weeks.indexOf(wkStart);
+            const curStatus =
+              wi >= 0 ? (habit.entries?.[wi]?.[todayDayIdx] ?? null) : null;
+            onToggleDay(habit.id, todayIso, curStatus);
+          }}
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor:
+              todayStatus === 1 ? habit.color || "#fff" : "#404040",
+          }}
+        >
+          <Ionicons name="checkmark" size={14} color="#fff" />
+        </Pressable>
+      </View>
 
-            {/* If the last week might be incomplete (defensive) we still fill blanks */}
-          </View>
-        </ScrollView>
-      </TouchableOpacity>
-    );
-  },
-  (prev, next) => {
-    // shallow checks to prevent re-render when nothing changed
-    if (prev.habit.id !== next.habit.id) return false;
-    if (prev.habit.weeks.length !== next.habit.weeks.length) return false;
-    if (prev.squareSize !== next.squareSize) return false;
-    if (prev.todayIso !== next.todayIso) return false;
-
-    // deep-ish compare statuses length and values
-    for (let w = 0; w < prev.habit.entries.length; w++) {
-      const pWeek = prev.habit.entries[w] || [];
-      const nWeek = next.habit.entries[w] || [];
-      if (pWeek.length !== nWeek.length) return false;
-      for (let d = 0; d < Math.max(pWeek.length, nWeek.length); d++) {
-        if (pWeek[d] !== nWeek[d]) return false;
-      }
-    }
-    return true;
-  }
-);
+      {/* Horizontal FlashList for weeks (virtualized) */}
+      <FlashList
+        data={habit.weeks}
+        horizontal
+        renderItem={renderWeek}
+        keyExtractor={weekKeyExtractor}
+        // estimatedItemSize={squareSize + SQUARE_GAP}
+        showsHorizontalScrollIndicator={false}
+        initialScrollIndex={initialWeekIndex}
+        contentContainerStyle={{ paddingRight: 12 }}
+      />
+    </TouchableOpacity>
+  );
+}); // end HabitRow
 
 HabitRow.displayName = "HabitRow";
 
-// Main screen: lists all habits
+// -------------------
+// Main screen
+// -------------------
 export default function OverallHeatmap() {
-  const { overallData, isLoading, error, refetch } = useHeatmapOverall();
+  const { overallData, isLoading, error } = useHeatmapOverall();
   const { toggleCheck } = useToggleHabitEntry();
   const dateInfo = useMemo(() => getDateInfo(), []);
   const todayIso = dateInfo.date;
 
-  // square size - you can expose as prop or compute based on device width
   const squareSize = DEFAULT_SQUARE;
 
   const onToggleDay = useCallback(
     (habitId: number, dateIso: string, curStatus: 0 | 1 | null) => {
-      // Use your hook's API: toggleCheck(habitId, dateIso, curStatus)
-      // It will compute the actual new value inside your hook
       toggleCheck(habitId, dateIso, curStatus);
     },
     [toggleCheck]
@@ -327,16 +323,13 @@ export default function OverallHeatmap() {
 
   return (
     <View style={{ flex: 1, padding: 12 }}>
-      <FlatList
+      <FlashList
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
-        removeClippedSubviews
-        maxToRenderPerBatch={6}
-        windowSize={6}
-        initialNumToRender={6}
+        // estimatedItemSize={110}
       />
     </View>
   );
