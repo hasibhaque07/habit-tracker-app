@@ -5,7 +5,11 @@ import {
   useHabitEntriesByPeriod,
 } from "@/hooks/useHabitEntriesByPeriod";
 import { useHabits } from "@/hooks/useHabits";
-import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
+
+//import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
+
+import { useToggleHabitEntry } from "@/hooks/useToggle";
+import { useHeatmapWeekly } from "@/hooks/useWeeklyHeatmap";
 import { Habit } from "@/types/dbTypes";
 import { getDateInfo } from "@/utils/dateUtils";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,6 +32,34 @@ export default function WeeklyView() {
   const today = getDateInfo().date;
 
   const {
+    weeklyData: weeklyDatas,
+    isLoading: weeklyLoading,
+    error: weeklyError,
+    refetch: weeklyRefetch,
+  } = useHeatmapWeekly();
+  //console.log("weeklt data: ", weeklyDatas);
+  //console.log("entries data: ", weeklyDatas?.entries);
+  // weeklyDatas?.forEach((habit) => {
+  //   const currentWeek = habit.entries[0];
+  //   const weekEntries = currentWeek
+  //     ? JSON.parse(currentWeek.statuses || "[]").map(
+  //         (status: any, idx: number) => ({
+  //           date: DateTime.fromISO(currentWeek.week_start)
+  //             .plus({ days: idx })
+  //             .toFormat("yyyy-MM-dd"),
+  //           status,
+  //         })
+  //       )
+  //     : [];
+
+  //   console.log(`Habit: ${habit.name}`);
+  //   console.log("Entries this week:", weekEntries);
+  // });
+
+  //console.log("weeklyDatas:", JSON.stringify(weeklyDatas, null, 2));
+  //console.log("weekly", weeklyDatas);
+
+  const {
     selectedHabit,
     actionSheetOpen,
     confirmSheet,
@@ -44,6 +76,8 @@ export default function WeeklyView() {
   const { data, isLoading, error, refetch } = useHabitEntriesByPeriod("weekly");
   const weeklyData: HabitWithWeeklyEntries[] =
     (data as HabitWithWeeklyEntries[]) || [];
+
+  //console.log("weeklyData", JSON.stringify(weeklyData, null, 2));
 
   useFocusEffect(
     useCallback(() => {
@@ -70,17 +104,24 @@ export default function WeeklyView() {
     router.push("/reorder");
   };
 
-  const handleCardPress = (habit: HabitWithWeeklyEntries) => {
+  const handleCardPress = (habit: any) => {
     // Placeholder for future detail screen navigation
   };
 
   const handleDayToggle = (
     habitId: number,
     date: string,
+    status: 0 | 1 | null,
     disabled: boolean
   ) => {
     if (disabled) return;
-    toggleCheck(habitId, date);
+
+    // const newStatus: 0 | 1 =
+    //   status === 1
+    //     ? 0 // toggle OFF
+    //     : 1; // toggle ON (null → 1, 0 → 1)
+
+    toggleCheck(habitId, date, status);
   };
 
   if (isLoading) {
@@ -102,7 +143,7 @@ export default function WeeklyView() {
   return (
     <View className="flex-1">
       <FlatList
-        data={weeklyData}
+        data={weeklyDatas}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 30 }}
@@ -144,7 +185,12 @@ export default function WeeklyView() {
                     <Pressable
                       disabled={disabled}
                       onPress={() =>
-                        handleDayToggle(item.id, entry.date, disabled)
+                        handleDayToggle(
+                          item.id,
+                          entry.date,
+                          entry.status,
+                          disabled
+                        )
                       }
                       className="rounded-2xl items-center justify-center"
                       style={{

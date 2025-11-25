@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS habits (
   "order" INTEGER NOT NULL DEFAULT 0
 );
 
--- Habit entries table (multiple toggles per day allowed)
+
+-- Habit entries table (only user interactions)
 CREATE TABLE IF NOT EXISTS habits_entry (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   habit_id INTEGER NOT NULL,
@@ -33,6 +34,24 @@ CREATE TABLE IF NOT EXISTS habits_entry (
   updated_at TEXT,
   FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_entry_habit_date 
+  ON habits_entry (habit_id, date);
+
+
+-- Heatmap cache table (weekly aggregation)
+CREATE TABLE IF NOT EXISTS habit_heatmap (
+  habit_id INTEGER NOT NULL,
+  week_start TEXT NOT NULL,
+  statuses TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (habit_id, week_start),
+  FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_heatmap_habit_week 
+  ON habit_heatmap (habit_id, week_start);
+
 
 -- Subscription history (optional)
 CREATE TABLE IF NOT EXISTS subscription_history (

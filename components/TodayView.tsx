@@ -6,8 +6,9 @@ import {
   useHabitEntriesByPeriod,
 } from "@/hooks/useHabitEntriesByPeriod";
 import { useHabits } from "@/hooks/useHabits";
-import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
+import { useToggleHabitEntry } from "@/hooks/useToggle";
 import { Habit } from "@/types/dbTypes";
+import { getDateInfo } from "@/utils/dateUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 
@@ -38,6 +39,8 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
     handleConfirm,
   } = useHabitActions();
 
+  const t = getDateInfo();
+
   const { archiveHabit, deleteHabit } = useHabits();
   const { toggleCheck } = useToggleHabitEntry();
 
@@ -59,6 +62,8 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
   // Type assertion to ensure TypeScript knows this is HabitWithEntry[]
   const habitsData: HabitWithEntry[] =
     (habitsWithEntries as HabitWithEntry[]) || [];
+
+  //console.log("Data", JSON.stringify(habitsData, null, 2));
 
   const handleArchive = (habit: Habit) => {
     archiveHabit(habit.id);
@@ -82,7 +87,7 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
   // Handle checkbox press (only checkbox, not the whole card)
   const handleCheckboxPress = (habit: HabitWithEntry, e: any) => {
     e.stopPropagation(); // Prevent card press
-    toggleCheck(habit.id); // Toggle today's entry
+    toggleCheck(habit.id, t.date, habit.entry_status); // Toggle today's entry
   };
 
   // Handle card press (for navigation - to be implemented later)

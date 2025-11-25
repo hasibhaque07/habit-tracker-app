@@ -62,7 +62,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SQLiteProvider
-        databaseName="habitTrackerApp1.db"
+        databaseName="habitTrackerApp4.db"
         onInit={migrateDbIfNeeded}
         options={{ useNewConnection: false }}
       >
