@@ -1,142 +1,21 @@
+import { FlashList } from "@shopify/flash-list";
+import React, { useCallback } from "react";
+import { StyleSheet, Text, View } from "react-native";
+
 import HabitActionSheet from "@/components/HabitActionSheet";
 import { useHabitActions } from "@/hooks/useHabitActions";
 import { useHabits } from "@/hooks/useHabits";
 import { useToggleHabitEntry } from "@/hooks/useToggle";
 import { useWeeklyHeatmap } from "@/hooks/useWeeklyHeatmap";
-import { Habit } from "@/types/dbTypes";
 import { getDateInfo } from "@/utils/dateUtils";
+import { router } from "expo-router";
+import WeeklyHabitCard from "./WeeklyHabitCard";
 
-import { Ionicons } from "@expo/vector-icons";
-import { FlashList } from "@shopify/flash-list";
-import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useMemo } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
-// -------------------
-// FAST WEEKDAY CACHE
-// -------------------
-const getWeekdayLabel = (date: string) =>
-  new Date(date).toLocaleDateString("en-US", { weekday: "short" });
-
-// -------------------
-// MEMOIZED DAY CIRCLE
-// -------------------
-const DayCircle = React.memo(function DayCircle({
-  entry,
-  disabled,
-  color,
-  label,
-  onToggle,
-}: {
-  entry: any;
-  disabled: boolean;
-  color: string;
-  label: string;
-  onToggle: () => void;
-}) {
-  const isChecked = entry.status === 1;
-
-  return (
-    <View className="items-center" style={{ width: 42 }}>
-      <Text className="text-xs text-neutral-400 mb-1">{label}</Text>
-
-      <Pressable
-        disabled={disabled}
-        onPress={onToggle}
-        className="rounded-2xl items-center justify-center"
-        style={{
-          backgroundColor: disabled ? "#1a1a1a" : isChecked ? color : "#2c2c2c",
-          width: 38,
-          height: 38,
-          opacity: disabled ? 0.3 : 1,
-        }}
-      >
-        <Ionicons
-          name="checkmark"
-          size={18}
-          color={isChecked ? "white" : "#666666"}
-        />
-      </Pressable>
-    </View>
-  );
-});
-
-// -------------------
-// MEMOIZED HABIT ROW
-// -------------------
-const HabitRow = React.memo(function HabitRow({
-  item,
-  today,
-  weekdayLabels,
-  onToggle,
-  openActions,
-}: {
-  item: any;
-  today: string;
-  weekdayLabels: Record<string, string>;
-  openActions: (habit: Habit) => void;
-  onToggle: (hid: number, entry: any, disabled: boolean) => void;
-}) {
-  // Pre-map entries so `.map` uses a stable array
-  const entryList = item.entries;
-
-  return (
-    <View className="bg-neutral-900 rounded-2xl p-4 mb-4">
-      <TouchableOpacity
-        onLongPress={() => openActions(item)}
-        className="flex-row items-center"
-        activeOpacity={0.7}
-      >
-        <View className="bg-neutral-800 rounded-2xl p-4 mr-3">
-          <Ionicons
-            name={(item.icon as any) ?? "help-outline"}
-            size={24}
-            color="#fff"
-          />
-        </View>
-
-        <Text className="flex-1 text-white text-lg">{item.name}</Text>
-      </TouchableOpacity>
-
-      <View className="flex-row justify-between mt-5">
-        {entryList.map((entry: any) => {
-          const disabled = entry.date > today;
-
-          return (
-            <DayCircle
-              key={entry.date}
-              entry={entry}
-              disabled={disabled}
-              color={item.color || "#fff"}
-              label={weekdayLabels[entry.date]}
-              onToggle={() => onToggle(item.id, entry, disabled)}
-            />
-          );
-        })}
-      </View>
-    </View>
-  );
-});
-
-// ==================
-//      MAIN VIEW
-// ==================
 export default function WeeklyView() {
-  const router = useRouter();
-  const today = getDateInfo().date;
-
-  const {
-    weeklyData: weeklyDatas,
-    isLoading,
-    error,
-    refetch,
-  } = useWeeklyHeatmap();
+  const { date: todayIso } = getDateInfo();
+  const { toggleCheck } = useToggleHabitEntry();
+  const { archiveHabit, deleteHabit } = useHabits();
+  const { weeklyData } = useWeeklyHeatmap();
 
   const {
     selectedHabit,
@@ -149,81 +28,41 @@ export default function WeeklyView() {
     handleConfirm,
   } = useHabitActions();
 
-  const { archiveHabit, deleteHabit } = useHabits();
-  const { toggleCheck } = useToggleHabitEntry();
-
-  // Refetch on focus
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
-  //-----------------------
-  //   WEEKDAY LABEL MAP
-  //-----------------------
-  const weekdayLabels = useMemo(() => {
-    const map: Record<string, string> = {};
-    weeklyDatas?.forEach((habit) => {
-      habit.entries.forEach((entry) => {
-        if (!map[entry.date]) {
-          map[entry.date] = getWeekdayLabel(entry.date);
-        }
-      });
-    });
-    return map;
-  }, [weeklyDatas]);
-
-  //-----------------------
-  //  STABLE TOGGLE HANDLER
-  //-----------------------
-  const onToggle = useCallback(
-    (habitId: number, entry: any, disabled: boolean) => {
-      if (!disabled) {
-        toggleCheck(habitId, entry.date, entry.status);
-      }
+  const toggleCheckGlobal = useCallback(
+    (habitId: number, dateIso: string, curStatus: 0 | 1 | null) => {
+      toggleCheck(habitId, dateIso, curStatus);
     },
     [toggleCheck]
   );
 
-  // -------------------
-  // LOADING / ERROR UI
-  // -------------------
-  if (isLoading) {
+  const handleEdit = (habit: any) =>
+    router.push({
+      pathname: "/newHabit",
+      params: { habitId: habit.id.toString() },
+    });
+
+  if (!weeklyData) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#fff" />
+      <View style={styles.center}>
+        <Text style={{ color: "white" }}>Loading...</Text>
       </View>
     );
   }
 
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-white">Error loading weekly data</Text>
-      </View>
-    );
-  }
-
-  // -------------------
-  //       UI
-  // -------------------
   return (
-    <View className="flex-1">
+    <View style={{ flex: 1 }}>
       <FlashList
-        data={weeklyDatas}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 30 }}
+        data={weeklyData}
+        keyExtractor={(i) => i.id.toString()}
         renderItem={({ item }) => (
-          <HabitRow
-            item={item}
-            today={today}
-            weekdayLabels={weekdayLabels}
-            openActions={openActions}
-            onToggle={onToggle}
+          <WeeklyHabitCard
+            habit={item}
+            todayIso={todayIso}
+            toggleCheckGlobal={toggleCheckGlobal}
+            onLongPressHabit={openActions}
           />
         )}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       />
 
       <HabitActionSheet
@@ -239,14 +78,13 @@ export default function WeeklyView() {
             (habit) => deleteHabit(habit.id)
           )
         }
-        onEdit={(habit) =>
-          router.push({
-            pathname: "/newHabit",
-            params: { habitId: habit.id.toString() },
-          })
-        }
+        onEdit={handleEdit}
         onReorder={() => router.push("/reorder")}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+});

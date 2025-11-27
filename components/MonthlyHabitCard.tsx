@@ -126,7 +126,7 @@ export default function MonthlyHabitCard({
         horizontal={false}
         showsVerticalScrollIndicator={false}
         style={{ marginTop: 10 }}
-        contentContainerStyle={{ alignItems: "flex-start" }}
+        contentContainerStyle={{ alignItems: "center" }}
       >
         <View style={{ width, height }}>
           <Canvas style={{ width, height }}>
@@ -155,6 +155,8 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     flex: 1,
     margin: 6,
+    alignContent: "center",
+    justifyContent: "center",
   },
 
   headerRow: {
