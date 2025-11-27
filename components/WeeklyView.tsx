@@ -2,7 +2,7 @@ import HabitActionSheet from "@/components/HabitActionSheet";
 import { useHabitActions } from "@/hooks/useHabitActions";
 import { useHabits } from "@/hooks/useHabits";
 import { useToggleHabitEntry } from "@/hooks/useToggle";
-import { useHeatmapWeekly } from "@/hooks/useWeeklyHeatmap";
+import { useWeeklyHeatmap } from "@/hooks/useWeeklyHeatmap";
 import { Habit } from "@/types/dbTypes";
 import { getDateInfo } from "@/utils/dateUtils";
 
@@ -136,7 +136,7 @@ export default function WeeklyView() {
     isLoading,
     error,
     refetch,
-  } = useHeatmapWeekly();
+  } = useWeeklyHeatmap();
 
   const {
     selectedHabit,

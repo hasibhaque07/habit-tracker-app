@@ -20,7 +20,7 @@ const CELL_STRIDE = CELL_SIZE + CELL_GAP;
 const getColor = (status: 0 | 1 | null, baseColor: string | null) =>
   status === 1 ? (baseColor ?? "#40c463") : "#2f2f2f";
 
-export default function OverallHabitItem({
+export default function OverallHabitCard({
   habit,
   todayIso,
   todayWeekStart,

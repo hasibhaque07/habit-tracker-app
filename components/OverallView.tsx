@@ -11,7 +11,7 @@ import React, { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 // 🔥 New Import
-import OverallHabitItem from "./OverallHabitItem";
+import OverallHabitCard from "./OverallHabitCard";
 
 export default function OverallView() {
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function OverallView() {
         data={overallData ?? []}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <OverallHabitItem
+          <OverallHabitCard
             habit={item}
             todayIso={todayIso}
             todayWeekStart={todayWeekStart}

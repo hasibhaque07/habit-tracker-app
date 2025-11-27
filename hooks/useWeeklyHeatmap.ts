@@ -46,7 +46,7 @@ export interface WeeklyHeatmapResult {
 // ---------------------------------------------------------
 // HOOK
 // ---------------------------------------------------------
-export function useHeatmapWeekly() {
+export function useWeeklyHeatmap() {
   const db = useSQLiteContext();
 
   const { data, isLoading, error, refetch } = useQuery<WeeklyHeatmapResult[]>({
