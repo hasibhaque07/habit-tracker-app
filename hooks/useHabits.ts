@@ -78,6 +78,10 @@ export const useHabits = () => {
       queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
+
+      queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
     },
     onError: () => {
       Alert.alert("Error", "Failed to create habit. Try again.");
@@ -155,6 +159,10 @@ export const useHabits = () => {
       queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
+
+      queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
     },
     onError: () => {
       Alert.alert("Error", "Failed to update habit. Try again.");
@@ -216,6 +224,10 @@ export const useHabits = () => {
         queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
         queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
         queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
+
+        queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
+        queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
+        queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
       }, 200);
     },
     onError: (error) => {
@@ -236,6 +248,10 @@ export const useHabits = () => {
       queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
+
+      queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
     },
     onError: () => {
       Alert.alert("Error", "Failed to archive habit. Try again.");
@@ -254,6 +270,10 @@ export const useHabits = () => {
       queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
+
+      queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
     },
     onError: () => {
       Alert.alert("Error", "Failed to delete habit. Try again.");

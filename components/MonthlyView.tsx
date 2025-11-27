@@ -1,288 +1,183 @@
-import HabitActionSheet from "@/components/HabitActionSheet";
-import { useHabitActions } from "@/hooks/useHabitActions";
-import {
-  HabitWithMonthlyEntries,
-  useHabitEntriesByPeriod,
-} from "@/hooks/useHabitEntriesByPeriod";
-import { useHabits } from "@/hooks/useHabits";
-import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
-import { Habit } from "@/types/dbTypes";
-import { getDateInfo } from "@/utils/dateUtils";
+// MonthlyView.tsx
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { DateTime } from "luxon";
-import React, { useCallback, useMemo } from "react";
+import { FlashList } from "@shopify/flash-list";
+import { Canvas, Rect as SkRect } from "@shopify/react-native-skia";
+import React, { useMemo, useRef } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
-// Memoized grid cell component for better performance
-const GridCell = React.memo<{
-  habitId: number;
-  date: string;
-  status: 0 | 1 | null;
-  isToday: boolean;
-  isFuture: boolean;
-  color: string;
-  squareSize: number;
-  onPress: (habitId: number, date: string) => void;
-}>(
-  ({
-    habitId,
-    date,
-    status,
-    isToday,
-    isFuture,
-    color,
-    squareSize,
-    onPress,
-  }) => {
-    const isChecked = status === 1;
-    const backgroundColor = isFuture
-      ? "#141414"
-      : isChecked
-        ? color
-        : "#2f2f2f";
+import HabitActionSheet from "@/components/HabitActionSheet";
+import { useHabitActions } from "@/hooks/useHabitActions";
+import { useHabits } from "@/hooks/useHabits";
+import { useMonthlyHeatmap } from "@/hooks/useMonthlyHeatmap";
+import { useToggleHabitEntry } from "@/hooks/useToggle";
+import { getDateInfo } from "@/utils/dateUtils";
+import { useRouter } from "expo-router";
+import { DateTime } from "luxon";
 
-    return (
-      <Pressable
-        disabled={isFuture}
-        onPress={() => onPress(habitId, date)}
-        style={{
-          width: squareSize,
-          height: squareSize,
-          marginRight: 4,
-          backgroundColor,
-          borderRadius: 2,
-          borderWidth: isToday ? 1 : 0,
-          borderColor: isToday ? "#ffffff30" : "transparent",
-          opacity: isFuture ? 0.4 : 1,
-        }}
-      />
-    );
-  },
-  (prev, next) => {
-    // Custom comparison for memo - only re-render if relevant props change
-    return (
-      prev.habitId === next.habitId &&
-      prev.date === next.date &&
-      prev.status === next.status &&
-      prev.isToday === next.isToday &&
-      prev.isFuture === next.isFuture &&
-      prev.color === next.color &&
-      prev.squareSize === next.squareSize
-    );
-  }
-);
+const CELL = 14;
+const GAP = 4;
+const STRIDE = CELL + GAP;
 
-GridCell.displayName = "GridCell";
+// normal color function
+const getColor = (val: 0 | 1 | null, color: string | null) =>
+  val === 1 ? (color ?? "#40c463") : "#2f2f2f";
 
-// Memoized empty cell component
-const EmptyCell = React.memo<{ squareSize: number }>(({ squareSize }) => (
-  <View
-    style={{
-      width: squareSize,
-      height: squareSize,
-      marginRight: 4,
-      backgroundColor: "transparent",
-    }}
-  />
-));
+/* -------------------------- Types -------------------------- */
+interface HabitCardProps {
+  habit: any; // Ideally use your Habit type
+  todayIso: string;
+  toggleCheckGlobal: (
+    habitId: number,
+    dateIso: string,
+    curStatus: number | null
+  ) => void;
+  onLongPressHabit: (habit: any) => void;
+}
 
-EmptyCell.displayName = "EmptyCell";
+/* ----------------------- Habit Card ------------------------ */
+function HabitCard({
+  habit,
+  todayIso,
+  toggleCheckGlobal,
+  onLongPressHabit,
+}: HabitCardProps) {
+  const scrollRef = useRef<ScrollView>(null);
 
-// Memoized habit card component
-const HabitCard = React.memo<{
-  habit: HabitWithMonthlyEntries;
-  today: string;
-  futureDates: Set<string>;
-  monthOffset: number;
-  squareSize: number;
-  totalDaysInMonth: number;
-  onCheckboxPress: (habit: HabitWithMonthlyEntries, e: any) => void;
-  onGridSquarePress: (habitId: number, date: string) => void;
-  onCardPress: (habit: HabitWithMonthlyEntries) => void;
-  onCardLongPress: (habit: Habit) => void;
-}>(
-  ({
-    habit,
-    today,
-    futureDates,
-    monthOffset,
-    squareSize,
-    totalDaysInMonth,
-    onCheckboxPress,
-    onGridSquarePress,
-    onCardPress,
-    onCardLongPress,
-  }) => {
-    // Pre-calculate today's entry status (memoized per habit)
-    const todayEntry = useMemo(
-      () => habit.entries.find((e) => e.date === today),
-      [habit.entries, today]
-    );
-    const isTodayChecked = todayEntry?.status === 1;
-    const checkboxColor = isTodayChecked ? habit.color || "#fff" : "#404040";
-    const checkmarkColor = isTodayChecked ? "white" : "#666666";
+  const rects = useMemo(() => {
+    const arr: {
+      x: number;
+      y: number;
+      status: 0 | 1 | null;
+      opacity: number;
+      color: string;
+    }[] = [];
 
-    // Pre-calculate grid structure (memoized per habit)
-    const gridRows = useMemo(() => {
-      if (!habit.entries || habit.entries.length === 0) return [];
+    const weeks = habit.entries ?? [];
+    const weekStartDates = habit.weeks ?? [];
 
-      // Only use entries up to totalDaysInMonth (exactly the month's days)
-      const monthEntries = habit.entries.slice(0, totalDaysInMonth);
+    if (!weekStartDates.length) return arr;
 
-      // Create cells array with offset empty cells at the start
-      const cells: ({ date: string; status: 0 | 1 | null } | null)[] = [];
-      for (let i = 0; i < monthOffset; i++) {
-        cells.push(null);
+    // Use the middle week to infer the target month (robust for month-overlapping weeks)
+    const middleIndex = Math.floor(weekStartDates.length / 2);
+    const currentMonth = DateTime.fromISO(weekStartDates[middleIndex]).month;
+
+    for (let w = 0; w < weeks.length; w++) {
+      const week = weeks[w] ?? [];
+      const weekStartIso = weekStartDates[w];
+
+      if (!weekStartIso) continue;
+
+      const weekStart = DateTime.fromISO(weekStartIso);
+
+      for (let d = 0; d < 7; d++) {
+        const cellDate = weekStart.plus({ days: d });
+
+        // Transparent if cellDate NOT in current month (Option A)
+        const isOutside = cellDate.month !== currentMonth;
+
+        const status = isOutside ? null : (week[d] ?? null);
+
+        arr.push({
+          x: d * STRIDE,
+          y: w * STRIDE,
+          status,
+          opacity: isOutside ? 0 : 1,
+          color: isOutside
+            ? "transparent"
+            : getColor(week[d] ?? null, habit.color ?? null),
+        });
       }
+    }
 
-      // Add only the month's entries (exactly totalDaysInMonth days)
-      monthEntries.forEach((entry) => {
-        cells.push({ date: entry.date, status: entry.status });
-      });
+    return arr;
+  }, [habit.entries, habit.weeks, habit.color]);
 
-      // Group into rows of 7 (weeks)
-      const rows: ({ date: string; status: 0 | 1 | null } | null)[][] = [];
-      for (let i = 0; i < cells.length; i += 7) {
-        const row = cells.slice(i, i + 7);
-        // Only add row if it has at least one day cell (not all empty)
-        if (row.some((cell) => cell !== null)) {
-          rows.push(row);
-        }
-      }
+  const width = 7 * STRIDE - GAP;
+  const height = (habit.entries.length || 1) * STRIDE - GAP;
 
-      return rows;
-    }, [habit.entries, monthOffset, totalDaysInMonth]);
+  // today's status
+  const todayWeekIndex = Math.max(0, (habit.entries?.length ?? 1) - 1);
+  const weekdayIdx = DateTime.fromISO(todayIso).weekday - 1;
+  const todayStatus =
+    (habit.entries?.[todayWeekIndex]?.[weekdayIdx] as 0 | 1 | null) ?? null;
 
-    // Calculate grid width for centering
-    const gridWidth = useMemo(() => {
-      // 7 columns * (squareSize + 4px margin) - last margin
-      return 7 * (squareSize + 4) - 4;
-    }, [squareSize]);
+  const onPressToday = () => {
+    toggleCheckGlobal(habit.id, todayIso, todayStatus);
+  };
 
-    return (
-      <TouchableOpacity
-        className="bg-neutral-900 rounded-2xl p-4 mb-4"
-        style={{ width: "48%" }}
-        activeOpacity={0.85}
-        onPress={() => onCardPress(habit)}
-        onLongPress={() => onCardLongPress(habit as Habit)}
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onLongPress={() => onLongPressHabit(habit)}
+      style={styles.card}
+    >
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <View style={styles.iconWrap}>
+          <Ionicons
+            name={habit.icon ?? "help-outline"}
+            size={20}
+            color="#fff"
+          />
+        </View>
+
+        <Text numberOfLines={1} style={styles.habitName}>
+          {habit.name}
+        </Text>
+
+        <TouchableOpacity
+          onPress={onPressToday}
+          style={[
+            styles.checkButton,
+            { backgroundColor: todayStatus === 1 ? habit.color : "#404040" },
+          ]}
+        >
+          <Ionicons name="checkmark" size={16} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Heatmap */}
+      <ScrollView
+        ref={scrollRef}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        style={{ marginTop: 10 }}
+        contentContainerStyle={{ alignItems: "flex-start" }}
       >
-        {/* Header: Icon, Name, Checkbox */}
-        <View className="flex-row items-center mb-3">
-          <View className="bg-neutral-800 rounded-2xl p-3 mr-2">
-            <Ionicons
-              name={(habit.icon as any) ?? "help-outline"}
-              size={20}
-              color="#fff"
-            />
-          </View>
-          <Text
-            className="flex-1 text-white text-base"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {habit.name}
-          </Text>
-          <Pressable
-            onPress={(e) => onCheckboxPress(habit, e)}
-            className="rounded-xl items-center justify-center"
-            style={{
-              backgroundColor: checkboxColor,
-              width: 28,
-              height: 28,
-            }}
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-          >
-            <Ionicons name="checkmark" size={14} color={checkmarkColor} />
-          </Pressable>
-        </View>
-
-        {/* Monthly Grid - Centered */}
-        <View style={{ marginTop: 12, alignItems: "center" }}>
-          <View style={{ width: gridWidth }}>
-            {gridRows.map((week, rowIndex) => (
-              <View
-                key={`week-${habit.id}-${rowIndex}`}
-                style={{ flexDirection: "row", marginBottom: 4 }}
-              >
-                {week.map((cell, colIndex) => {
-                  if (!cell || !cell.date) {
-                    return (
-                      <EmptyCell
-                        key={`empty-${habit.id}-${rowIndex}-${colIndex}`}
-                        squareSize={squareSize}
-                      />
-                    );
-                  }
-
-                  const isToday = cell.date === today;
-                  const isFuture = futureDates.has(cell.date);
-
-                  return (
-                    <GridCell
-                      key={`${habit.id}-${cell.date}`}
-                      habitId={habit.id}
-                      date={cell.date}
-                      status={cell.status}
-                      isToday={isToday}
-                      isFuture={isFuture}
-                      color={habit.color || "#fff"}
-                      squareSize={squareSize}
-                      onPress={onGridSquarePress}
-                    />
-                  );
-                })}
-              </View>
+        {/* wrap canvas in a fixed-size View to avoid unexpected centering/clipping */}
+        <View style={{ width, height }}>
+          <Canvas style={{ width, height }}>
+            {rects.map((r, i) => (
+              <SkRect
+                key={i}
+                x={r.x}
+                y={r.y}
+                width={CELL}
+                height={CELL}
+                opacity={r.opacity}
+                color={r.color}
+              />
             ))}
-          </View>
+          </Canvas>
         </View>
-      </TouchableOpacity>
-    );
-  },
-  (prev, next) => {
-    // Custom comparison - only re-render if habit data actually changed
-    return (
-      prev.habit.id === next.habit.id &&
-      prev.habit.entries.length === next.habit.entries.length &&
-      prev.habit.entries.every(
-        (e, i) =>
-          e.date === next.habit.entries[i].date &&
-          e.status === next.habit.entries[i].status
-      ) &&
-      prev.habit.color === next.habit.color &&
-      prev.today === next.today &&
-      prev.monthOffset === next.monthOffset &&
-      prev.totalDaysInMonth === next.totalDaysInMonth &&
-      prev.squareSize === next.squareSize
-    );
-  }
-);
+      </ScrollView>
+    </TouchableOpacity>
+  );
+}
 
-HabitCard.displayName = "HabitCard";
-
+/* ------------------------ Main View ------------------------ */
 export default function MonthlyView() {
   const router = useRouter();
 
-  // Memoize dateInfo - only calculate once per render
-  const dateInfo = useMemo(() => getDateInfo(), []);
-  const today = dateInfo.date;
-  const monthStart = dateInfo.monthStart;
-  const monthEnd = dateInfo.monthEnd;
-
-  // Calculate total days in month
-  const totalDaysInMonth = useMemo(() => {
-    const start = DateTime.fromISO(monthStart);
-    const end = DateTime.fromISO(monthEnd);
-    return end.diff(start, "days").days + 1; // +1 to include both start and end
-  }, [monthStart, monthEnd]);
+  const { monthlyData, isLoading, error } = useMonthlyHeatmap();
+  const { toggleCheck } = useToggleHabitEntry();
+  const { archiveHabit, deleteHabit } = useHabits();
 
   const {
     selectedHabit,
@@ -295,173 +190,46 @@ export default function MonthlyView() {
     handleConfirm,
   } = useHabitActions();
 
-  const { archiveHabit, deleteHabit } = useHabits();
-  const { toggleCheck } = useToggleHabitEntry();
+  const { date: todayIso } = getDateInfo();
 
-  const { data, isLoading, error } = useHabitEntriesByPeriod("monthly");
-  const monthlyData: HabitWithMonthlyEntries[] =
-    (data as HabitWithMonthlyEntries[]) || [];
+  const toggleCheckGlobal = (
+    habitId: number,
+    dateIso: string,
+    curStatus: any
+  ) => toggleCheck(habitId, dateIso, curStatus);
 
-  // Remove refetch on focus - it's expensive and not needed
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     refetch();
-  //   }, [refetch])
-  // );
-
-  const handleArchive = useCallback(
-    (habit: Habit) => {
-      archiveHabit(habit.id);
-    },
-    [archiveHabit]
-  );
-
-  const handleDelete = useCallback(
-    (habit: Habit) => {
-      deleteHabit(habit.id);
-    },
-    [deleteHabit]
-  );
-
-  const handleEdit = useCallback(
-    (habit: Habit) => {
-      router.push({
-        pathname: "/newHabit",
-        params: { habitId: habit.id.toString() },
-      });
-    },
-    [router]
-  );
-
-  const handleReorder = useCallback(() => {
-    router.push("/reorder");
-  }, [router]);
-
-  const handleCardPress = useCallback((habit: HabitWithMonthlyEntries) => {
-    // Placeholder for habit detail navigation
-  }, []);
-
-  const handleCheckboxPress = useCallback(
-    (habit: HabitWithMonthlyEntries, e: any) => {
-      e.stopPropagation();
-      toggleCheck(habit.id);
-    },
-    [toggleCheck]
-  );
-
-  const handleGridSquarePress = useCallback(
-    (habitId: number, date: string) => {
-      toggleCheck(habitId, date);
-    },
-    [toggleCheck]
-  );
-
-  const handleCardLongPress = useCallback(
-    (habit: Habit) => {
-      openActions(habit);
-    },
-    [openActions]
-  );
-
-  // Pre-calculate month offset once (same for all habits in the same month)
-  const monthOffset = useMemo(() => {
-    const firstDateObj = DateTime.fromISO(monthStart);
-    const firstWeekday = firstDateObj.weekday; // 1=Monday, 7=Sunday
-    return firstWeekday === 7 ? 6 : firstWeekday - 1;
-  }, [monthStart]);
-
-  // Pre-calculate future dates Set for O(1) lookup instead of O(n) string comparison
-  const futureDates = useMemo(() => {
-    const future = new Set<string>();
-    const todayDate = DateTime.fromISO(today);
-    const endDate = DateTime.fromISO(monthEnd);
-    let current = todayDate.plus({ days: 1 }); // Start from tomorrow
-
-    while (current <= endDate) {
-      future.add(current.toFormat("yyyy-MM-dd"));
-      current = current.plus({ days: 1 });
-    }
-    return future;
-  }, [today, monthEnd]);
-
-  // Calculate square size - larger for better visibility
-  const squareSize = useMemo(() => 14, []);
-
-  // Memoize render function
-  const renderItem = useCallback(
-    ({ item }: { item: HabitWithMonthlyEntries }) => {
-      return (
-        <HabitCard
-          habit={item}
-          today={today}
-          futureDates={futureDates}
-          monthOffset={monthOffset}
-          squareSize={squareSize}
-          totalDaysInMonth={totalDaysInMonth}
-          onCheckboxPress={handleCheckboxPress}
-          onGridSquarePress={handleGridSquarePress}
-          onCardPress={handleCardPress}
-          onCardLongPress={handleCardLongPress}
-        />
-      );
-    },
-    [
-      today,
-      futureDates,
-      monthOffset,
-      squareSize,
-      totalDaysInMonth,
-      handleCheckboxPress,
-      handleGridSquarePress,
-      handleCardPress,
-      handleCardLongPress,
-    ]
-  );
-
-  // Memoize key extractor
-  const keyExtractor = useCallback(
-    (item: HabitWithMonthlyEntries) => item.id.toString(),
-    []
-  );
-
-  if (isLoading) {
+  if (isLoading)
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#fff" />
+      <View style={styles.center}>
+        <Text style={{ color: "white" }}>Loading...</Text>
       </View>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-white">Error loading monthly data</Text>
+      <View style={styles.center}>
+        <Text style={{ color: "white" }}>Error loading monthly heatmap</Text>
       </View>
     );
-  }
 
   return (
-    <View className="flex-1">
-      <FlatList
-        data={monthlyData}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
+    <View style={{ flex: 1 }}>
+      <FlashList
+        data={monthlyData ?? []}
         numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between" }}
-        contentContainerStyle={{ paddingBottom: 30 }}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={6}
-        windowSize={5}
-        initialNumToRender={6}
-        updateCellsBatchingPeriod={50}
-        getItemLayout={(data, index) => ({
-          length: 200, // Approximate item height
-          offset: 200 * Math.floor(index / 2),
-          index,
-        })}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        renderItem={({ item }) => (
+          <HabitCard
+            habit={item}
+            todayIso={todayIso}
+            toggleCheckGlobal={toggleCheckGlobal}
+            onLongPressHabit={openActions}
+          />
+        )}
       />
 
+      {/* Action Sheet */}
       <HabitActionSheet
         selectedHabit={selectedHabit}
         actionSheetOpen={actionSheetOpen}
@@ -469,10 +237,58 @@ export default function MonthlyView() {
         onCloseActions={closeActions}
         onShowConfirm={showConfirm}
         onCloseConfirm={closeConfirm}
-        onConfirm={() => handleConfirm(handleArchive, handleDelete)}
-        onEdit={handleEdit}
-        onReorder={handleReorder}
+        onConfirm={() =>
+          handleConfirm(
+            (habit) => archiveHabit(habit.id),
+            (habit) => deleteHabit(habit.id)
+          )
+        }
+        onEdit={(habit) =>
+          router.push({
+            pathname: "/newHabit",
+            params: { habitId: habit.id.toString() },
+          })
+        }
+        onReorder={() => router.push("/reorder")}
       />
     </View>
   );
 }
+
+/* ------------------------ Styles ------------------------ */
+const styles = StyleSheet.create({
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+  card: {
+    backgroundColor: "#1c1c1c",
+    padding: 14,
+    borderRadius: 18,
+    flex: 1,
+    margin: 6,
+    alignItems: "flex-start", // changed from "center" to avoid centering / clipping
+    justifyContent: "center",
+  },
+
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+
+  iconWrap: {
+    backgroundColor: "#333",
+    padding: 8,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+
+  habitName: { color: "white", fontSize: 15, flex: 1 },
+
+  checkButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
