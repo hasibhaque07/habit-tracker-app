@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, StatusBar, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
@@ -61,6 +61,8 @@ export default function RootLayout() {
   // Include both route groups in the Stack
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* <StatusBar hidden={true} /> */}
+      <StatusBar className="bg-neutral-900" />
       <SQLiteProvider
         databaseName="habitTrackerApp4.db"
         onInit={migrateDbIfNeeded}
@@ -74,7 +76,7 @@ export default function RootLayout() {
           >
             <Stack.Screen
               name="(onboarding)"
-              options={{ headerShown: false }}
+              options={{ headerShown: false, presentation: "transparentModal" }}
             />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen

@@ -2,7 +2,7 @@ const Colors = {
   black: "#000000",
   darkGray: "#292929",
   mediumGray: "#585656",
-  lightGray: "#BEBEBE",
+  lightGray: "#E0E0E0",
   white: "#FFFFFF",
   habitCardBackground: "#1C1C1C",
   habitIconBackground: "#333333",

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ONBOARDING_KEY = "hasSeenOnboarding4";
+const ONBOARDING_KEY = "hasSeenOnboarding5";
 
 export const storage = {
   async hasSeenOnboarding() {
@@ -9,5 +9,8 @@ export const storage = {
   },
   async setOnboardingSeen() {
     await AsyncStorage.setItem(ONBOARDING_KEY, "true");
+  },
+  async setOnboardingUnseen() {
+    await AsyncStorage.removeItem(ONBOARDING_KEY);
   },
 };

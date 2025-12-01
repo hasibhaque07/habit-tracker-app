@@ -157,7 +157,7 @@ export default function NewHabitScreen() {
         <View className="absolute bottom-0 w-full px-5 pb-2">
           <TouchableOpacity
             onPress={saveHabit}
-            className="py-4 rounded-xl bg-white"
+            className="py-4 rounded-full bg-white"
           >
             <Text className="text-center text-lg font-semibold text-black">
               {isEditMode ? "Update" : "Save"}

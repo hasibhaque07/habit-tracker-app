@@ -126,7 +126,7 @@ export default function HabitsScreen() {
   const isEmpty = !habits || habits.length === 0;
 
   return (
-    <View className="flex-1 bg-neutral-900 px-5 pt-16">
+    <View className="flex-1 bg-neutral-900 px-5 pt-12">
       {/* Header */}
       <HomeHeader />
 
