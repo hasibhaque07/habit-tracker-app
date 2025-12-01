@@ -134,8 +134,12 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
 
           return (
             <View
-              className="flex-row items-center justify-between rounded-2xl p-4 mb-4"
-              style={{ backgroundColor: Colors.habitCardBackground }}
+              className="flex-row items-center justify-between rounded-2xl  p-4 mb-4"
+              style={{
+                backgroundColor: Colors.habitCardBackground,
+                borderWidth: 1,
+                borderColor: Colors.borderColor,
+              }}
             >
               <TouchableOpacity
                 onPress={() => handleCardPress(item)}

@@ -102,16 +102,16 @@ export default function NewHabitScreen() {
           <View className="items-center mb-6">
             <TouchableOpacity
               onPress={() => setIsIconModalVisible(true)}
-              className="w-32 h-32 rounded-full bg-neutral-800 items-center justify-center"
+              className="w-32 h-32 rounded-full bg-neutral-800 items-center justify-center border border-neutral-700"
             >
               <HabitIcon name={icon} size={60} />
             </TouchableOpacity>
           </View>
 
           {/* NAME */}
-          <Text className="text-white mb-2">Name</Text>
+          <Text className="text-white text-lg font-bold mb-2 ">Name</Text>
           <TextInput
-            className="bg-neutral-800 px-4 py-4 rounded-xl text-white mb-5"
+            className="bg-neutral-800 px-4 py-4 rounded-xl text-white mb-5 border border-neutral-700"
             placeholder="Enter habit name"
             placeholderTextColor="#777"
             value={name}
@@ -119,9 +119,9 @@ export default function NewHabitScreen() {
           />
 
           {/* DESCRIPTION */}
-          <Text className="text-white mb-2">Description</Text>
+          <Text className="text-white text-lg font-bold mb-2">Description</Text>
           <TextInput
-            className="bg-neutral-800 px-4 py-6 rounded-xl text-white mb-5"
+            className="bg-neutral-800 px-4 py-6 rounded-xl text-white mb-5 border border-neutral-700"
             placeholder="Description"
             placeholderTextColor="#777"
             value={description}
@@ -142,17 +142,6 @@ export default function NewHabitScreen() {
                   setColor(c);
                 }}
               />
-
-              // <ColorOption
-              //   key={c}
-              //   color={c}
-              //   selected={c === color}
-              //   onPress={() => {
-              //     // direct setColor — ScrollView's keyboardShouldPersistTaps="always"
-              //     // ensures this tap is delivered even if keyboard is open
-              //     setColor(c);
-              //   }}
-              // />
             ))}
           </View>
 

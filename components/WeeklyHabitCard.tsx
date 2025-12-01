@@ -115,6 +115,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.habitCardBackground,
     padding: 14,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
   },
   headerRow: {
     flexDirection: "row",
@@ -154,5 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: CELL_RADIUS,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
   },
 });

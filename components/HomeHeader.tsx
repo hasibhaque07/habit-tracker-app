@@ -10,7 +10,7 @@ const HomeHeader = () => {
         <Ionicons name="grid-outline" size={26} color="white" />
       </Link> */}
       <TouchableOpacity onPress={() => router.push("/more")}>
-        <Ionicons name="grid-outline" size={26} color="white" />
+        <Ionicons name="grid-outline" size={24} color="white" />
       </TouchableOpacity>
       <Text className="text-white text-3xl font-bold">Habits</Text>
 

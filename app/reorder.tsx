@@ -2,6 +2,7 @@
 import HabitIcon from "@/components/HabitIcon";
 import { useHabits } from "@/hooks/useHabits";
 import { Habit } from "@/types/dbTypes";
+import Colors from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -56,11 +57,14 @@ export default function ReorderScreen() {
         <TouchableOpacity
           onLongPress={drag}
           disabled={isActive}
-          className={`flex-row items-center bg-neutral-900 rounded-2xl p-4 mb-4 ${
+          className={`flex-row items-center  rounded-2xl p-4 mb-4 ${
             isActive ? "opacity-50" : ""
           }`}
           style={{
             transform: [{ scale: isActive ? 0.98 : 1 }],
+            backgroundColor: Colors.habitCardBackground,
+            borderWidth: 1,
+            borderColor: Colors.borderColor,
           }}
         >
           {/* Icon */}
@@ -84,17 +88,19 @@ export default function ReorderScreen() {
   };
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-neutral-900">
       {/* Header */}
-      <View className="flex-row items-center px-5 pt-12 pb-5">
+      <View className="flex-row items-center px-5 pt-12 ">
         <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={30} color="white" />
+          <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-semibold ml-4">
           Reorder habits
         </Text>
       </View>
-
+      <Text className="text-gray-400 text-lg px-5 py-5 mb-2">
+        Long press an item to reorder.
+      </Text>
       {/* Habits List */}
       <View className="flex-1 px-5">
         <DraggableFlatList

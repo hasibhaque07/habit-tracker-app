@@ -59,6 +59,7 @@ export default function MonthlyView() {
         data={monthlyData ?? []}
         numColumns={2}
         keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         // estimatedItemSize={250}
         renderItem={({ item }) => (

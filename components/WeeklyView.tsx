@@ -54,6 +54,7 @@ export default function WeeklyView() {
       <FlashList
         data={weeklyData}
         keyExtractor={(i) => i.id.toString()}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
           <WeeklyHabitCard

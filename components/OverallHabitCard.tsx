@@ -139,6 +139,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.habitCardBackground,
     borderRadius: 14,
     padding: 12,
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
   },
   headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   iconWrap: {

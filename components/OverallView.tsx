@@ -67,6 +67,7 @@ export default function OverallView() {
       <FlashList
         data={overallData ?? []}
         keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
           <OverallHabitCard

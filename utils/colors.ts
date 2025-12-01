@@ -10,6 +10,7 @@ const Colors = {
   cellColor: "#2F2F2F",
   disabledCellColor: "#2c2c2c",
   checkMarkColor: "#666666",
+  borderColor: "#3f3f46",
 } as const;
 
 export default Colors;

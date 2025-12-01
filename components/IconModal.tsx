@@ -127,7 +127,7 @@ export default function IconModal({
           <View className="flex-row px-5 mb-4">
             <TouchableOpacity
               onPress={() => setSelectedTab("Icon")}
-              className={`flex-1 py-3 rounded-full mr-2 ${
+              className={`flex-1 py-3 rounded-full mr-2 border border-neutral-700  ${
                 selectedTab === "Icon" ? "bg-neutral-800" : "bg-neutral-900"
               }`}
             >
@@ -141,7 +141,7 @@ export default function IconModal({
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setSelectedTab("Emoji")}
-              className={`flex-1 py-3 rounded-full ml-2 ${
+              className={`flex-1 py-3 rounded-full ml-2 border border-neutral-700 ${
                 selectedTab === "Emoji" ? "bg-neutral-800" : "bg-neutral-900"
               }`}
             >
@@ -157,7 +157,7 @@ export default function IconModal({
 
           {/* Search Bar */}
           <View className="px-5 mb-4">
-            <View className="flex-row items-center bg-neutral-800 rounded-full px-4 py-2">
+            <View className="flex-row items-center bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 ">
               <Ionicons name="search-outline" size={20} color="#777" />
               <TextInput
                 className="flex-1 text-white ml-3"
