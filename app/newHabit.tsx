@@ -76,7 +76,7 @@ export default function NewHabitScreen() {
   const isSaveEnabled = name.trim().length > 0;
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-neutral-900">
       {/* HEADER */}
       <View className="flex-row items-center px-5 pt-12 pb-5">
         <TouchableOpacity onPress={() => router.back()}>
