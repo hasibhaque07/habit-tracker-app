@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -14,9 +14,13 @@ const HomeHeader = () => {
       </TouchableOpacity>
       <Text className="text-white text-3xl font-bold">Habits</Text>
 
-      <Link href="/newHabit">
+      <TouchableOpacity onPress={() => router.push("/newHabit")}>
         <Ionicons name="add" size={30} color="white" />
-      </Link>
+      </TouchableOpacity>
+
+      {/* <Link href="/newHabit">
+        <Ionicons name="add" size={30} color="white" />
+      </Link> */}
     </View>
   );
 };

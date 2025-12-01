@@ -1,4 +1,5 @@
 // components/MonthlyHabitCard.tsx
+import Colors from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Canvas, Rect as SkRect } from "@shopify/react-native-skia";
 import { DateTime } from "luxon";
@@ -16,7 +17,7 @@ const GAP = 4;
 const STRIDE = CELL + GAP;
 
 const getColor = (val: 0 | 1 | null, color: string | null) =>
-  val === 1 ? (color ?? "#40c463") : "#2f2f2f";
+  val === 1 ? (color ?? "#40c463") : Colors.cellColor;
 
 export interface MonthlyHabitCardProps {
   habit: any;
@@ -35,6 +36,10 @@ export default function MonthlyHabitCard({
   toggleCheckGlobal,
   onLongPressHabit,
 }: MonthlyHabitCardProps) {
+  const weekStartDates: string[] = habit.weeks ?? [];
+  const weeks: (0 | 1 | null)[][] = habit.entries ?? [];
+
+  // Build rects for the heatmap grid
   const rects = useMemo(() => {
     const arr: {
       x: number;
@@ -42,10 +47,8 @@ export default function MonthlyHabitCard({
       status: 0 | 1 | null;
       opacity: number;
       color: string;
+      dateIso?: string;
     }[] = [];
-
-    const weeks = habit.entries ?? [];
-    const weekStartDates = habit.weeks ?? [];
 
     if (!weekStartDates.length) return arr;
 
@@ -61,6 +64,9 @@ export default function MonthlyHabitCard({
 
       for (let d = 0; d < 7; d++) {
         const cellDate = weekStart.plus({ days: d });
+        //const iso = cellDate.toISODate(); // YYYY-MM-DD
+        const iso = cellDate.toISO()?.substring(0, 10) ?? "";
+
         const isOutside = cellDate.month !== currentMonth;
 
         const status = isOutside ? null : (week[d] ?? null);
@@ -73,22 +79,47 @@ export default function MonthlyHabitCard({
           color: isOutside
             ? "transparent"
             : getColor(status, habit.color ?? null),
+          dateIso: iso,
         });
       }
     }
 
     return arr;
-  }, [habit.entries, habit.weeks, habit.color]);
+  }, [weekStartDates, weeks, habit.color]);
 
   const width = 7 * STRIDE - GAP;
-  const height = (habit.entries.length || 1) * STRIDE - GAP;
+  const height = (weeks.length || 1) * STRIDE - GAP;
 
-  const todayWeekIndex = Math.max(0, (habit.entries?.length ?? 1) - 1);
-  const weekdayIdx = DateTime.fromISO(todayIso).weekday - 1;
-  const todayStatus =
-    (habit.entries?.[todayWeekIndex]?.[weekdayIdx] as 0 | 1 | null) ?? null;
+  // Helper: find week index that contains a given dateIso (YYYY-MM-DD)
+  const findWeekIndexForDate = (dateIso: string) => {
+    // Iterate weekStartDates and check if dateIso is between weekStart and weekStart + 6 days
+    for (let i = 0; i < weekStartDates.length; i++) {
+      const start = DateTime.fromISO(weekStartDates[i]);
+      const end = start.plus({ days: 6 });
+      const date = DateTime.fromISO(dateIso);
+      if (date >= start.startOf("day") && date <= end.endOf("day")) {
+        return i;
+      }
+    }
+    // fallback to last week index if not found
+    return Math.max(0, weekStartDates.length - 1);
+  };
+
+  // Helper: get status for a dateIso (0|1|null)
+  const getStatusForDate = (dateIso: string): 0 | 1 | null => {
+    if (!weekStartDates.length || !weeks.length) return null;
+    const wkIdx = findWeekIndexForDate(dateIso);
+    const date = DateTime.fromISO(dateIso);
+    const weekdayIdx = date.weekday - 1; // 0..6
+    const week = weeks[wkIdx] ?? [];
+    return (week[weekdayIdx] as 0 | 1 | null) ?? null;
+  };
+
+  // Use the helper to compute today's status (ensures correct week lookup)
+  const todayStatus = getStatusForDate(todayIso);
 
   const onPressToday = () => {
+    // Use the same getStatusForDate for current value and pass the actual dateIso
     toggleCheckGlobal(habit.id, todayIso, todayStatus);
   };
 
@@ -115,7 +146,12 @@ export default function MonthlyHabitCard({
           onPress={onPressToday}
           style={[
             styles.checkButton,
-            { backgroundColor: todayStatus === 1 ? habit.color : "#404040" },
+            {
+              backgroundColor:
+                todayStatus === 1
+                  ? (habit.color ?? "#40c463")
+                  : Colors.checkBoxBackground,
+            },
           ]}
         >
           <Ionicons name="checkmark" size={16} color="#fff" />
@@ -150,7 +186,7 @@ export default function MonthlyHabitCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#1c1c1c",
+    backgroundColor: Colors.habitCardBackground,
     padding: 14,
     borderRadius: 18,
     flex: 1,
@@ -166,13 +202,13 @@ const styles = StyleSheet.create({
   },
 
   iconWrap: {
-    backgroundColor: "#333",
+    backgroundColor: Colors.habitIconBackground,
     padding: 8,
     borderRadius: 10,
     marginRight: 10,
   },
 
-  habitName: { color: "white", fontSize: 15, flex: 1 },
+  habitName: { color: "white", fontSize: 13, flex: 1, paddingRight: 2 },
 
   checkButton: {
     width: 32,

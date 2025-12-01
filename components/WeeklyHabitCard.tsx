@@ -1,3 +1,4 @@
+import Colors from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 import React, { useMemo } from "react";
@@ -19,9 +20,9 @@ function getCellColor(
   color?: string,
   disabled?: boolean
 ) {
-  if (disabled) return "#2c2c2c";
+  if (disabled) return Colors.disabledCellColor;
   if (status === 1) return color || "#40c463";
-  return "#3a3a3a";
+  return Colors.checkBoxBackground;
 }
 
 export default function WeeklyHabitCard({
@@ -98,7 +99,7 @@ export default function WeeklyHabitCard({
                 ]}
               >
                 {e.status === 1 && (
-                  <Ionicons name="checkmark" size={20} color="#fff" />
+                  <Ionicons name="checkmark" size={22} color="#fff" />
                 )}
               </Pressable>
             );
@@ -111,7 +112,7 @@ export default function WeeklyHabitCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#161616",
+    backgroundColor: Colors.habitCardBackground,
     padding: 14,
     borderRadius: 16,
   },
@@ -120,18 +121,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+    padding: 10,
+    borderRadius: 10,
     marginRight: 14,
-    backgroundColor: "#202020",
+    backgroundColor: Colors.habitIconBackground,
     alignItems: "center",
     justifyContent: "center",
   },
   habitName: {
     color: "#fff",
-    fontSize: 19,
-    fontWeight: "600",
+    fontSize: 16,
   },
   weekHeader: {
     flexDirection: "row",

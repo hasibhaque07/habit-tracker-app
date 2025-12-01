@@ -54,6 +54,7 @@ export default function WeeklyView() {
       <FlashList
         data={weeklyData}
         keyExtractor={(i) => i.id.toString()}
+        contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
           <WeeklyHabitCard
             habit={item}
@@ -86,5 +87,9 @@ export default function WeeklyView() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

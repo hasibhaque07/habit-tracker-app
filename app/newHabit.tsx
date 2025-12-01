@@ -96,7 +96,7 @@ export default function NewHabitScreen() {
         <View className="items-center mb-6">
           <TouchableOpacity
             onPress={() => setIsIconModalVisible(true)}
-            className="w-32 h-32 rounded-full bg-neutral-900 items-center justify-center"
+            className="w-32 h-32 rounded-full bg-neutral-800 items-center justify-center"
           >
             <HabitIcon name={icon} size={60} />
           </TouchableOpacity>
@@ -105,7 +105,7 @@ export default function NewHabitScreen() {
         {/* NAME */}
         <Text className="text-white mb-2">Name</Text>
         <TextInput
-          className="bg-neutral-900 p-3 rounded-xl text-white mb-5"
+          className="bg-neutral-800 px-4 py-4 rounded-xl text-white mb-5"
           placeholder="Enter habit name"
           placeholderTextColor="#777"
           value={name}
@@ -115,8 +115,8 @@ export default function NewHabitScreen() {
         {/* DESCRIPTION */}
         <Text className="text-white mb-2">Description</Text>
         <TextInput
-          className="bg-neutral-900 p-3 rounded-xl text-white mb-5"
-          placeholder="Optional"
+          className="bg-neutral-800 px-4 py-6 rounded-xl text-white mb-5"
+          placeholder="Description"
           placeholderTextColor="#777"
           value={description}
           onChangeText={setDescription}

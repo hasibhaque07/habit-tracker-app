@@ -1,4 +1,5 @@
 // OverallHabitItem.tsx
+import Colors from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Canvas, Rect as SkRect } from "@shopify/react-native-skia";
 import { DateTime } from "luxon";
@@ -18,7 +19,7 @@ const DAYS = 7;
 const CELL_STRIDE = CELL_SIZE + CELL_GAP;
 
 const getColor = (status: 0 | 1 | null, baseColor: string | null) =>
-  status === 1 ? (baseColor ?? "#40c463") : "#2f2f2f";
+  status === 1 ? (baseColor ?? "#40c463") : Colors.cellColor;
 
 export default function OverallHabitCard({
   habit,
@@ -99,11 +100,13 @@ export default function OverallHabitCard({
             styles.todayButton,
             {
               backgroundColor:
-                todayStatus === 1 ? (habit.color ?? "#40c463") : "#404040",
+                todayStatus === 1
+                  ? (habit.color ?? "#40c463")
+                  : Colors.checkBoxBackground,
             },
           ]}
         >
-          <Ionicons name="checkmark" size={14} color="#fff" />
+          <Ionicons name="checkmark" size={20} color="#fff" />
         </Pressable>
       </TouchableOpacity>
 
@@ -133,21 +136,22 @@ export default function OverallHabitCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#0f0f0f",
+    backgroundColor: Colors.habitCardBackground,
     borderRadius: 14,
     padding: 12,
   },
   headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   iconWrap: {
-    backgroundColor: "#151515",
-    padding: 8,
+    backgroundColor: Colors.habitIconBackground,
+    padding: 10,
     borderRadius: 10,
     marginRight: 8,
   },
-  habitName: { color: "white", flex: 1, fontSize: 14 },
+  habitName: { color: "white", flex: 1, fontSize: 16 },
   todayButton: {
-    width: 30,
-    height: 30,
+    // width: 30,
+    // height: 30,
+    padding: 8,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
