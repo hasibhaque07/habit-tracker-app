@@ -16,6 +16,7 @@ export default function OnboardingLayout() {
           options={{
             headerShown: false,
             presentation: "transparentModal",
+            animation: "slide_from_right",
           }}
         />
         <Stack.Screen name="onboarding" />
