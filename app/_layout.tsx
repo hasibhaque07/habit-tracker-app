@@ -10,7 +10,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const [loading, setLoading] = useState(true);
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(
+    null
+  );
 
   const router = useRouter();
   const segments = useSegments();
@@ -27,16 +29,39 @@ export default function RootLayout() {
     checkOnboarding();
   }, []);
 
+  // useEffect(() => {
+  //   if (loading) return;
+  //   if (hasSeenOnboarding === null) return;
+
+  //   const inOnboardingGroup = segments[0] === "(onboarding)";
+
+  //   if (!hasSeenOnboarding && !inOnboardingGroup) {
+  //     router.replace("/(onboarding)/welcome");
+  //   }
+  //   // else if (hasSeenOnboarding && inOnboardingGroup) {
+  //   //   router.replace("/(tabs)");
+  //   // }
+  // }, [hasSeenOnboarding, loading, segments, router]);
+
   useEffect(() => {
     if (loading) return;
+    if (hasSeenOnboarding === null) return;
 
-    const inOnboardingGroup = segments[0] === "(onboarding)";
+    // Delay the redirect slightly to let segments/router stabilize
+    const timeout = setTimeout(() => {
+      const inOnboardingGroup = segments[0] === "(onboarding)";
 
-    if (!hasSeenOnboarding && !inOnboardingGroup) {
-      router.replace("/(onboarding)/welcome");
-    } else if (hasSeenOnboarding && inOnboardingGroup) {
-      router.replace("/(tabs)");
-    }
+      if (!hasSeenOnboarding && !inOnboardingGroup) {
+        router.replace("/(onboarding)/welcome");
+      }
+
+      // Do NOT auto-redirect the other way here (avoid loops)
+      if (hasSeenOnboarding && inOnboardingGroup) {
+        router.replace("/(tabs)");
+      }
+    }, 10); // 10–30ms works best on Expo
+
+    return () => clearTimeout(timeout);
   }, [hasSeenOnboarding, loading, segments, router]);
 
   // Re-check onboarding status when navigating to tabs
@@ -76,8 +101,9 @@ export default function RootLayout() {
           >
             <Stack.Screen
               name="(onboarding)"
-              options={{ headerShown: false, presentation: "transparentModal" }}
+              options={{ headerShown: false }}
             />
+
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
               name="newHabit"

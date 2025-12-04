@@ -8,7 +8,8 @@ export default function OnboardingLayout() {
       <StatusBar hidden={true} />
       <Stack
         screenOptions={{
-          contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
+          // contentStyle: { backgroundColor: "#000000" },
+          headerShown: false,
         }}
       >
         <Stack.Screen
@@ -16,7 +17,7 @@ export default function OnboardingLayout() {
           options={{
             headerShown: false,
             presentation: "transparentModal",
-            animation: "slide_from_right",
+            animation: "slide_from_bottom",
           }}
         />
         <Stack.Screen name="onboarding" />
