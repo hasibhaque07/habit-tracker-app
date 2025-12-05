@@ -1,4 +1,4 @@
-// app/icon.tsx
+
 import { iconCategories, uniqueIcons } from "@/utils/iconCategories";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";

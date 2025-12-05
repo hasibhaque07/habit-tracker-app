@@ -29,37 +29,21 @@ export default function RootLayout() {
     checkOnboarding();
   }, []);
 
-  // useEffect(() => {
-  //   if (loading) return;
-  //   if (hasSeenOnboarding === null) return;
-
-  //   const inOnboardingGroup = segments[0] === "(onboarding)";
-
-  //   if (!hasSeenOnboarding && !inOnboardingGroup) {
-  //     router.replace("/(onboarding)/welcome");
-  //   }
-  //   // else if (hasSeenOnboarding && inOnboardingGroup) {
-  //   //   router.replace("/(tabs)");
-  //   // }
-  // }, [hasSeenOnboarding, loading, segments, router]);
 
   useEffect(() => {
     if (loading) return;
-    if (hasSeenOnboarding === null) return;
+    //if (hasSeenOnboarding === null) return;
 
-    // Delay the redirect slightly to let segments/router stabilize
     const timeout = setTimeout(() => {
       const inOnboardingGroup = segments[0] === "(onboarding)";
 
       if (!hasSeenOnboarding && !inOnboardingGroup) {
         router.replace("/(onboarding)/welcome");
       }
-
-      // Do NOT auto-redirect the other way here (avoid loops)
       if (hasSeenOnboarding && inOnboardingGroup) {
         router.replace("/(tabs)");
       }
-    }, 40); // 10–30ms works best on Expo
+    }, 40); // 40ms works best to load data as async storage is slow
 
     return () => clearTimeout(timeout);
   }, [hasSeenOnboarding, loading, segments, router]);
@@ -83,7 +67,7 @@ export default function RootLayout() {
     );
   }
 
-  // Include both route groups in the Stack
+  
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#171717" }}>
       <StatusBar hidden={true} />
@@ -98,7 +82,7 @@ export default function RootLayout() {
             screenOptions={{
               headerShown: false,
               contentStyle: { backgroundColor: "#171717" },
-              //animation: "none", // Disable animation to prevent white flash
+              //animation: "none", 
             }}
           >
             <Stack.Screen
@@ -124,7 +108,7 @@ export default function RootLayout() {
                 animation: "slide_from_right",
               }}
             />
-            {/* <Stack.Screen name="pro" /> */}
+            
             <Stack.Screen
               name="reorder"
               options={{

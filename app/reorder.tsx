@@ -1,4 +1,4 @@
-// app/reorder.tsx
+
 import HabitIcon from "@/components/HabitIcon";
 import { useHabits } from "@/hooks/useHabits";
 import { Habit } from "@/types/dbTypes";

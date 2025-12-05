@@ -1,4 +1,4 @@
-// /types/types.ts
+
 import { IconName } from "./icons";
 
 export type UUID = string;

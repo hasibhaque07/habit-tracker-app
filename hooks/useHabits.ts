@@ -73,12 +73,9 @@ export const useHabits = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
-      // Also invalidate habit entries queries
+      
       queryClient.invalidateQueries({ queryKey: ["habits-entries-today"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
-
+     
       queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
@@ -154,12 +151,9 @@ export const useHabits = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
-      // Also invalidate habit entries queries
+      
       queryClient.invalidateQueries({ queryKey: ["habits-entries-today"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
-
+      
       queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
@@ -219,12 +213,9 @@ export const useHabits = () => {
       // Delay invalidation slightly to allow UI animation to complete
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["habits"] });
-        // Also invalidate habit entries queries
+        
         queryClient.invalidateQueries({ queryKey: ["habits-entries-today"] });
-        queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
-        queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
-        queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
-
+      
         queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
         queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
         queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
@@ -243,12 +234,9 @@ export const useHabits = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
-      // Also invalidate habit entries queries
+      
       queryClient.invalidateQueries({ queryKey: ["habits-entries-today"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
-
+      
       queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-overall"] });
@@ -265,11 +253,8 @@ export const useHabits = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
-      // Also invalidate habit entries queries
+     
       queryClient.invalidateQueries({ queryKey: ["habits-entries-today"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-weekly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-monthly"] });
-      queryClient.invalidateQueries({ queryKey: ["habits-entries-overall"] });
 
       queryClient.invalidateQueries({ queryKey: ["heatmap-monthly"] });
       queryClient.invalidateQueries({ queryKey: ["heatmap-weekly"] });

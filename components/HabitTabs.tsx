@@ -6,7 +6,7 @@ type FilterType = "Today" | "Weekly" | "Monthly" | "Overall";
 type Props = {
   filters: readonly FilterType[];
   activeTab: FilterType;
-  onChange: (tab: FilterType) => void; // 👈 FIXED TYPE
+  onChange: (tab: FilterType) => void; // FIXED TYPE
 };
 
 export default function HabitTabs({ filters, activeTab, onChange }: Props) {

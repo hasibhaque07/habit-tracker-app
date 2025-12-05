@@ -31,7 +31,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name="home-outline"
-              size={24}
+              size={26}
               color={focused ? Colors.white : Colors.mediumGray}
             />
           ),

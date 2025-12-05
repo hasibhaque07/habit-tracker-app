@@ -1,4 +1,4 @@
-// hooks/useHabitActions.ts
+
 import { Habit } from "@/types/dbTypes";
 import { useState } from "react";
 

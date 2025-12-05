@@ -9,12 +9,10 @@ export default function OnboardingLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: "#171717" },
-          animation: "none", // Disable animation to prevent white flash
+          animation: "none", 
         }}
       >
         <Stack.Screen name="welcome" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="pro" />
       </Stack>
     </>
   );

@@ -44,7 +44,7 @@ export function useHeatmapOverall() {
     queryFn: async () => {
       const t = getDateInfo();
 
-      // 1️⃣ Compute all Mondays from year start → current week
+      // Compute all Mondays from year start → current week
       const yearStartWeek = DateTime.fromISO(t.yearStart)
         .startOf("week")
         .toFormat("yyyy-MM-dd");
@@ -60,13 +60,13 @@ export function useHeatmapOverall() {
         cursor = cursor.plus({ weeks: 1 });
       }
 
-      // 2️⃣ Fetch heatmap data from DB
+      // Fetch heatmap data from DB
       const rows = await db.getAllAsync<HeatmapRow>(HEATMAP_QUERY, [
         yearStartWeek,
         currentWeekStart,
       ]);
 
-      // 3️⃣ Group by habit ID
+      // Group by habit ID
       const habitMap = new Map<number, any>();
       for (const row of rows) {
         if (!habitMap.has(row.id)) {
@@ -96,7 +96,7 @@ export function useHeatmapOverall() {
         }
       }
 
-      // 4️⃣ Build final entries array (Option A)
+      // Build final entries array (Option A)
       //   const result = Array.from(habitMap.values()).map((habit) => {
       //     const entries: (0 | 1 | null)[][] = weeks.map((weekStart) => {
       //       return (
@@ -135,57 +135,3 @@ export function useHeatmapOverall() {
   return { overallData, isLoading, error, refetch };
 }
 
-// import { getDateInfo } from "@/utils/dateUtils";
-// import { useQuery } from "@tanstack/react-query";
-// import { useSQLiteContext } from "expo-sqlite";
-// import { DateTime } from "luxon";
-
-// // Utility: Parse SQL JSON array result
-// function parseEntries(rows: any[]) {
-//   return rows.map((row) => ({
-//     ...row,
-//     entries: JSON.parse(row.entries || "[]"),
-//   }));
-// }
-
-// const HEATMAP_QUERY = `
-// SELECT
-//   h.*,
-//   hh.week_start,
-//   hh.statuses
-// FROM habits h
-// LEFT JOIN habit_heatmap hh
-//   ON hh.habit_id = h.id
-//   AND hh.week_start BETWEEN ? AND ?
-// WHERE h.active = 1
-// ORDER BY h."order" ASC, hh.week_start ASC;
-// `;
-
-// export function useHeatmapOverall() {
-//   const db = useSQLiteContext();
-
-//   const {
-//     data: overallData,
-//     isLoading,
-//     error,
-//     refetch,
-//   } = useQuery({
-//     queryKey: ["heatmap-overall"],
-//     queryFn: async () => {
-//       const t = getDateInfo();
-
-//       const yearStartWeek = DateTime.fromISO(t.yearStart)
-//         .startOf("week")
-//         .toFormat("yyyy-MM-dd");
-//       //const currentWeek = t.weekStart;
-
-//       const rows = await db.getAllAsync(HEATMAP_QUERY, [
-//         yearStartWeek,
-//         t.weekStart,
-//       ]);
-//       return parseEntries(rows);
-//     },
-//   });
-
-//   return {overallData, isLoading, error, refetch}
-// }

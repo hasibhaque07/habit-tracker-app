@@ -15,7 +15,7 @@ type HeatmapRow = {
   active: number;
   order: number;
   week_start: string | null;
-  statuses: string | null; // stored as JSON string
+  statuses: string | null; 
 };
 
 const HEATMAP_QUERY = `
@@ -98,13 +98,7 @@ export function useMonthlyHeatmap() {
         }
       }
 
-      // 4️⃣ Build final entries array (Option A)
-      //   const result = Array.from(habitMap.values()).map((habit) => {
-      //     const entries: (0 | 1 | null)[][] = weeks.map((weekStart) => {
-      //       return (
-      //         habit.entriesMap[weekStart] ?? Array(7).fill(null) // fill missing weeks with null
-      //       );
-      //     });
+  
       const result = Array.from(habitMap.values()).map((habit) => {
         const entries: (0 | 1 | null)[][] = weeks.map((weekStart) => {
           return habit.entriesMap[weekStart] ?? Array(7).fill(null);

@@ -9,91 +9,7 @@ import OverallView from "@/components/OverallView";
 import TodayView from "@/components/TodayView";
 import WeeklyView from "@/components/WeeklyView";
 import { useHabits } from "@/hooks/useHabits";
-import type { Habit } from "@/types/types";
 
-const mockHabits: Habit[] = [
-  {
-    id: 1,
-    title: "Wake up early",
-    icon: "alarm-outline",
-    color: "#F77F7F",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 2,
-    title: "Exercise",
-    icon: "barbell-outline",
-    color: "#C084FC",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 3,
-    title: "Reading",
-    icon: "book-outline",
-    color: "#FBBF24",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 4,
-    title: "Wake up early",
-    icon: "alarm-outline",
-    color: "#F77F7F",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 5,
-    title: "Exercise",
-    icon: "barbell-outline",
-    color: "#C084FC",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 6,
-    title: "Reading",
-    icon: "book-outline",
-    color: "#FBBF24",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 7,
-    title: "Wake up early",
-    icon: "alarm-outline",
-    color: "#F77F7F",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 8,
-    title: "Exercise",
-    icon: "barbell-outline",
-    color: "#C084FC",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-  {
-    id: 9,
-    title: "Reading",
-    icon: "book-outline",
-    color: "#FBBF24",
-    description: "",
-    active: 1,
-    created_at: "",
-  },
-];
 
 const FILTERS = ["Today", "Weekly", "Monthly", "Overall"] as const;
 type FilterType = (typeof FILTERS)[number];
@@ -102,8 +18,6 @@ export default function HabitsScreen() {
   const [activeTab, setActiveTab] = useState<FilterType>("Today");
 
   const { habits } = useHabits();
-
-  //const habits: Habit[] = mockHabits;
 
   const renderContent = useMemo(() => {
     if (!habits || habits.length === 0) return null;
@@ -122,7 +36,7 @@ export default function HabitsScreen() {
     }
   }, [activeTab, habits]);
 
-  //const isEmpty = true;
+
   const isEmpty = !habits || habits.length === 0;
 
   return (

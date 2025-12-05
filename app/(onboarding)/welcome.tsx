@@ -14,7 +14,6 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-black" edges={["bottom"]}>
-      {/* Main Layout */}
       <View className="flex-1">
         {/* Full Top Image */}
         <Image
