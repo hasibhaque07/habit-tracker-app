@@ -59,7 +59,7 @@ export default function RootLayout() {
       if (hasSeenOnboarding && inOnboardingGroup) {
         router.replace("/(tabs)");
       }
-    }, 10); // 10–30ms works best on Expo
+    }, 40); // 10–30ms works best on Expo
 
     return () => clearTimeout(timeout);
   }, [hasSeenOnboarding, loading, segments, router]);
@@ -73,11 +73,11 @@ export default function RootLayout() {
 
   if (loading) {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#171717" }}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000000" }}
         >
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="#ffffff" />
         </View>
       </GestureHandlerRootView>
     );
@@ -85,9 +85,9 @@ export default function RootLayout() {
 
   // Include both route groups in the Stack
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      {/* <StatusBar hidden={true} /> */}
-      <StatusBar className="bg-neutral-900" />
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#171717" }}>
+      <StatusBar hidden={true} />
+      {/* <StatusBar className="bg-neutral-900" /> */}
       <SQLiteProvider
         databaseName="habitTrackerApp4.db"
         onInit={migrateDbIfNeeded}
@@ -96,7 +96,9 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <Stack
             screenOptions={{
-              contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
+              headerShown: false,
+              contentStyle: { backgroundColor: "#171717" },
+              //animation: "none", // Disable animation to prevent white flash
             }}
           >
             <Stack.Screen
