@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import EmptyView from "@/components/EmptyView";
 import HabitTabs from "@/components/HabitTabs";
@@ -9,7 +10,6 @@ import OverallView from "@/components/OverallView";
 import TodayView from "@/components/TodayView";
 import WeeklyView from "@/components/WeeklyView";
 import { useHabits } from "@/hooks/useHabits";
-
 
 const FILTERS = ["Today", "Weekly", "Monthly", "Overall"] as const;
 type FilterType = (typeof FILTERS)[number];
@@ -36,23 +36,24 @@ export default function HabitsScreen() {
     }
   }, [activeTab, habits]);
 
-
   const isEmpty = !habits || habits.length === 0;
 
   return (
-    <View className="flex-1 bg-neutral-900 px-5 pt-12">
-      {/* Header */}
-      <HomeHeader />
+    <SafeAreaView className="flex-1 bg-neutral-900">
+      <View className="flex-1 px-5 pt-4">
+        {/* Header */}
+        <HomeHeader />
 
-      {/* Tabs Component */}
-      <HabitTabs
-        filters={FILTERS}
-        activeTab={activeTab}
-        onChange={setActiveTab}
-      />
+        {/* Tabs Component */}
+        <HabitTabs
+          filters={FILTERS}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+        />
 
-      {/* Conditional Content */}
-      {isEmpty ? <EmptyView /> : renderContent}
-    </View>
+        {/* Conditional Content */}
+        {isEmpty ? <EmptyView /> : renderContent}
+      </View>
+    </SafeAreaView>
   );
 }

@@ -20,6 +20,7 @@ export default function RootLayout() {
 
   // Function to check onboarding status
   const checkOnboarding = async () => {
+    // setLoading(true);
     const seen = await storage.hasSeenOnboarding();
     setHasSeenOnboarding(seen);
     setLoading(false);
@@ -29,29 +30,32 @@ export default function RootLayout() {
     checkOnboarding();
   }, []);
 
-
   useEffect(() => {
     if (loading) return;
     //if (hasSeenOnboarding === null) return;
 
-    const timeout = setTimeout(() => {
-      const inOnboardingGroup = segments[0] === "(onboarding)";
+    // const timeout = setTimeout(() => {
+    const inOnboardingGroup = segments[0] === "(onboarding)";
 
-      if (!hasSeenOnboarding && !inOnboardingGroup) {
-        router.replace("/(onboarding)/welcome");
-      }
-      if (hasSeenOnboarding && inOnboardingGroup) {
-        router.replace("/(tabs)");
-      }
-    }, 40); // 40ms works best to load data as async storage is slow
+    if (!hasSeenOnboarding && !inOnboardingGroup) {
+      router.replace("/(onboarding)/welcome");
+    }
+    if (hasSeenOnboarding && inOnboardingGroup) {
+      router.replace("/(tabs)");
+    }
+    //}, 40); // 40ms works best to load data as async storage is slow
 
-    return () => clearTimeout(timeout);
+    //return () => clearTimeout(timeout);
   }, [hasSeenOnboarding, loading, segments, router]);
 
   // Re-check onboarding status when navigating to tabs
   useEffect(() => {
-    if (segments[0] === "(tabs)" && !loading) {
-      checkOnboarding();
+    // if (segments[0] === "(tabs)" && !loading) {
+    //   checkOnboarding();
+    // }
+    if (segments[0] === "(tabs)" && !loading && hasSeenOnboarding === false) {
+      // Just marked as completed, update state without async wait
+      setHasSeenOnboarding(true);
     }
   }, [segments, loading]);
 
@@ -59,7 +63,12 @@ export default function RootLayout() {
     return (
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#171717" }}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000000" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#000000",
+          }}
         >
           <ActivityIndicator size="large" color="#ffffff" />
         </View>
@@ -67,7 +76,6 @@ export default function RootLayout() {
     );
   }
 
-  
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#171717" }}>
       <StatusBar hidden={true} />
@@ -82,7 +90,7 @@ export default function RootLayout() {
             screenOptions={{
               headerShown: false,
               contentStyle: { backgroundColor: "#171717" },
-              //animation: "none", 
+              //animation: "none",
             }}
           >
             <Stack.Screen
@@ -108,7 +116,7 @@ export default function RootLayout() {
                 animation: "slide_from_right",
               }}
             />
-            
+
             <Stack.Screen
               name="reorder"
               options={{

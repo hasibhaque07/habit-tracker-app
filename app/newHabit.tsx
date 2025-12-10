@@ -17,6 +17,8 @@ import {
   View,
 } from "react-native";
 
+import { SafeAreaView } from "react-native-safe-area-context";
+
 export default function NewHabitScreen() {
   const defaultIcon = "pulse-outline";
   const params = useLocalSearchParams<{ habitId?: string }>();
@@ -75,96 +77,100 @@ export default function NewHabitScreen() {
   const isSaveEnabled = name.trim().length > 0;
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <View className="flex-1 bg-neutral-900">
-        {/* HEADER */}
-        <View className="flex-row items-center px-5 pt-12 pb-5">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="close" size={30} color="white" />
-          </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }} className="bg-neutral-900">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View className="flex-1 bg-neutral-900">
+          {/* HEADER */}
+          <View className="flex-row items-center px-5 pb-5">
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close" size={30} color="white" />
+            </TouchableOpacity>
 
-          <Text className="text-white text-2xl font-semibold ml-4">
-            {isEditMode ? "Edit Habit" : "New Habit"}
-          </Text>
-        </View>
+            <Text className="text-white text-2xl font-semibold ml-4">
+              {isEditMode ? "Edit Habit" : "New Habit"}
+            </Text>
+          </View>
 
-        {/* Allow taps to persist through the open keyboard so color taps still register */}
-        <ScrollView
-          className="flex-1 px-5"
-          contentContainerStyle={{ paddingBottom: 120 }}
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "none"}
-        >
-          {/* ICON */}
-          <View className="items-center mb-6">
+          {/* Allow taps to persist through the open keyboard so color taps still register */}
+          <ScrollView
+            className="flex-1 px-5"
+            contentContainerStyle={{ paddingBottom: 120 }}
+            keyboardShouldPersistTaps="always"
+            keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "none"}
+          >
+            {/* ICON */}
+            <View className="items-center mb-6">
+              <TouchableOpacity
+                onPress={() => setIsIconModalVisible(true)}
+                className="w-32 h-32 rounded-full bg-neutral-800 items-center justify-center border border-neutral-700"
+              >
+                <HabitIcon name={icon} size={60} />
+              </TouchableOpacity>
+            </View>
+
+            {/* NAME */}
+            <Text className="text-white text-lg font-bold mb-2 ">Name</Text>
+            <TextInput
+              className="bg-neutral-800 px-4 py-4 rounded-xl text-white mb-5 border border-neutral-700"
+              placeholder="Enter habit name"
+              placeholderTextColor="#777"
+              value={name}
+              onChangeText={setName}
+            />
+
+            {/* DESCRIPTION */}
+            <Text className="text-white text-lg font-bold mb-2">
+              Description
+            </Text>
+            <TextInput
+              className="bg-neutral-800 px-4 py-6 rounded-xl text-white mb-5 border border-neutral-700"
+              placeholder="Description"
+              placeholderTextColor="#777"
+              value={description}
+              onChangeText={setDescription}
+            />
+
+            {/* COLOR */}
+            <Text className="text-white mb-3">Color</Text>
+
+            <View className="flex-row flex-wrap mb-5">
+              {habitColors.map((c) => (
+                <ColorOption
+                  key={c}
+                  color={c}
+                  selected={c === color}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    setColor(c);
+                  }}
+                />
+              ))}
+            </View>
+
+            {/* ICON MODAL */}
+            <IconModal
+              visible={isIconModalVisible}
+              onClose={() => setIsIconModalVisible(false)}
+              onSelect={(selectedIcon) => setIcon(selectedIcon)}
+            />
+          </ScrollView>
+
+          {/* SAVE BUTTON – moves above keyboard */}
+          <View className="absolute bottom-0 w-full px-5 pb-2">
             <TouchableOpacity
-              onPress={() => setIsIconModalVisible(true)}
-              className="w-32 h-32 rounded-full bg-neutral-800 items-center justify-center border border-neutral-700"
+              onPress={saveHabit}
+              className="py-4 rounded-full bg-white"
             >
-              <HabitIcon name={icon} size={60} />
+              <Text className="text-center text-lg font-semibold text-black">
+                {isEditMode ? "Update" : "Save"}
+              </Text>
             </TouchableOpacity>
           </View>
-
-          {/* NAME */}
-          <Text className="text-white text-lg font-bold mb-2 ">Name</Text>
-          <TextInput
-            className="bg-neutral-800 px-4 py-4 rounded-xl text-white mb-5 border border-neutral-700"
-            placeholder="Enter habit name"
-            placeholderTextColor="#777"
-            value={name}
-            onChangeText={setName}
-          />
-
-          {/* DESCRIPTION */}
-          <Text className="text-white text-lg font-bold mb-2">Description</Text>
-          <TextInput
-            className="bg-neutral-800 px-4 py-6 rounded-xl text-white mb-5 border border-neutral-700"
-            placeholder="Description"
-            placeholderTextColor="#777"
-            value={description}
-            onChangeText={setDescription}
-          />
-
-          {/* COLOR */}
-          <Text className="text-white mb-3">Color</Text>
-
-          <View className="flex-row flex-wrap mb-5">
-            {habitColors.map((c) => (
-              <ColorOption
-                key={c}
-                color={c}
-                selected={c === color}
-                onPress={() => {
-                  Keyboard.dismiss();
-                  setColor(c);
-                }}
-              />
-            ))}
-          </View>
-
-          {/* ICON MODAL */}
-          <IconModal
-            visible={isIconModalVisible}
-            onClose={() => setIsIconModalVisible(false)}
-            onSelect={(selectedIcon) => setIcon(selectedIcon)}
-          />
-        </ScrollView>
-
-        {/* SAVE BUTTON – moves above keyboard */}
-        <View className="absolute bottom-0 w-full px-5 pb-2">
-          <TouchableOpacity
-            onPress={saveHabit}
-            className="py-4 rounded-full bg-white"
-          >
-            <Text className="text-center text-lg font-semibold text-black">
-              {isEditMode ? "Update" : "Save"}
-            </Text>
-          </TouchableOpacity>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -104,114 +105,121 @@ export default function IconModal({
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={false}
       animationType="slide"
       onRequestClose={onClose}
     >
-      {/* Background overlay */}
-      <Pressable className="flex-1 bg-black/70" onPress={onClose}>
-        {/* Modal content - Full height */}
-        <Pressable
-          onPress={(e) => e.stopPropagation()}
-          className="bg-neutral-900 rounded-t-3xl flex-1"
-          style={{ marginTop: 0 }}
-        >
-          {/* Header */}
-          <View className="flex-row items-center px-5 pt-6 pb-4">
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="arrow-back" size={28} color="white" />
-            </TouchableOpacity>
-          </View>
+      {/* Full screen dark overlay */}
+      <Pressable
+        style={StyleSheet.absoluteFill}
+        className="bg-neutral-900"
+        onPress={onClose}
+      />
 
-          {/* Segmented Control */}
-          <View className="flex-row px-5 mb-4">
-            <TouchableOpacity
-              onPress={() => setSelectedTab("Icon")}
-              className={`flex-1 py-3 rounded-full mr-2 border border-neutral-700  ${
-                selectedTab === "Icon" ? "bg-neutral-800" : "bg-neutral-900"
-              }`}
-            >
-              <Text
-                className={`text-center font-semibold ${
-                  selectedTab === "Icon" ? "text-white" : "text-neutral-400"
-                }`}
-              >
-                Icon
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setSelectedTab("Emoji")}
-              className={`flex-1 py-3 rounded-full ml-2 border border-neutral-700 ${
-                selectedTab === "Emoji" ? "bg-neutral-800" : "bg-neutral-900"
-              }`}
-            >
-              <Text
-                className={`text-center font-semibold ${
-                  selectedTab === "Emoji" ? "text-white" : "text-neutral-400"
-                }`}
-              >
-                Emoji
-              </Text>
-            </TouchableOpacity>
-          </View>
+      {/* Modal content - overlays the pressable */}
+      <Pressable
+        onPress={(e) => e.stopPropagation()}
+        className="bg-neutral-900 flex-1"
+        style={{ position: "absolute", bottom: 0, left: 0, right: 0, top: 0 }}
+      >
+        {/* Header */}
+        <View className="flex-row items-center px-5 pt-6 pb-4">
+          <TouchableOpacity onPress={onClose}>
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+        </View>
 
-          {/* Search Bar */}
-          <View className="px-5 mb-4">
-            <View className="flex-row items-center bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 ">
-              <Ionicons name="search-outline" size={20} color="#777" />
-              <TextInput
-                className="flex-1 text-white ml-3"
-                placeholder="Type a search term"
-                placeholderTextColor="#777"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery("")}>
-                  <Ionicons name="close-circle" size={20} color="#777" />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-
-          {/* Icons List - Scrollable */}
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 50 }}
-            showsVerticalScrollIndicator={true}
-            nestedScrollEnabled={true}
+        {/* Segmented Control */}
+        <View className="flex-row px-5 mb-4">
+          <TouchableOpacity
+            onPress={() => setSelectedTab("Icon")}
+            className={`flex-1 py-3 rounded-full mr-2 border border-neutral-700  ${
+              selectedTab === "Icon" ? "bg-neutral-800" : "bg-neutral-900"
+            }`}
           >
-            {selectedTab === "Icon" ? (
-              searchQuery.trim() ? (
-                // Show flat list when searching
-                <View
-                  className="flex-row flex-wrap"
-                  style={{ marginHorizontal: -4 }}
-                >
-                  {filteredAllIcons.map((icon, index) =>
-                    renderIconItem(icon, index)
-                  )}
-                </View>
-              ) : (
-                // Show categorized list when not searching
-                <FlatList
-                  data={filteredCategories}
-                  renderItem={renderCategory}
-                  keyExtractor={(item) => item.name}
-                  scrollEnabled={false}
-                  nestedScrollEnabled={true}
-                />
-              )
-            ) : (
-              // Emoji section (placeholder for now)
-              <View className="items-center justify-center py-20">
-                <Text className="text-neutral-400 text-lg">
-                  Emoji feature coming soon
-                </Text>
-              </View>
+            <Text
+              className={`text-center font-semibold ${
+                selectedTab === "Icon" ? "text-white" : "text-neutral-400"
+              }`}
+            >
+              Icon
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setSelectedTab("Emoji")}
+            className={`flex-1 py-3 rounded-full ml-2 border border-neutral-700 ${
+              selectedTab === "Emoji" ? "bg-neutral-800" : "bg-neutral-900"
+            }`}
+          >
+            <Text
+              className={`text-center font-semibold ${
+                selectedTab === "Emoji" ? "text-white" : "text-neutral-400"
+              }`}
+            >
+              Emoji
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Search Bar */}
+        <View className="px-5 mb-4">
+          <View className="flex-row items-center bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 ">
+            <Ionicons name="search-outline" size={20} color="#777" />
+            <TextInput
+              className="flex-1 text-white ml-3"
+              placeholder="Type a search term"
+              placeholderTextColor="#777"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery("")}>
+                <Ionicons name="close-circle" size={20} color="#777" />
+              </TouchableOpacity>
             )}
-          </ScrollView>
-        </Pressable>
+          </View>
+        </View>
+
+        {/* Icons List - Scrollable */}
+        <ScrollView
+          className="flex-1 bg-neutral-900"
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 50,
+          }}
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled={true}
+        >
+          {selectedTab === "Icon" ? (
+            searchQuery.trim() ? (
+              // Show flat list when searching
+              <View
+                className="flex-row flex-wrap"
+                style={{ marginHorizontal: -4 }}
+              >
+                {filteredAllIcons.map((icon, index) =>
+                  renderIconItem(icon, index)
+                )}
+              </View>
+            ) : (
+              // Show categorized list when not searching
+              <FlatList
+                data={filteredCategories}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item.name}
+                scrollEnabled={false}
+                nestedScrollEnabled={true}
+              />
+            )
+          ) : (
+            // Emoji section (placeholder for now)
+            <View className="items-center justify-center py-20">
+              <Text className="text-neutral-400 text-lg">
+                Emoji feature coming soon
+              </Text>
+            </View>
+          )}
+        </ScrollView>
       </Pressable>
     </Modal>
   );
