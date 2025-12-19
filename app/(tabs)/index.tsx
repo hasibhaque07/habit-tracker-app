@@ -51,7 +51,6 @@ export default function HabitsScreen() {
           onChange={setActiveTab}
         />
 
-        {/* Conditional Content */}
         {isEmpty ? <EmptyView /> : renderContent}
       </View>
     </SafeAreaView>

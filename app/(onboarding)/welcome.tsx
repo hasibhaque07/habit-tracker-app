@@ -11,7 +11,6 @@ export default function WelcomeScreen() {
 
   const onGetStarted = async () => {
     completedOnboarding();
-    //await storage.setOnboardingSeen();
     router.replace("/(tabs)"); // Go to main app
   };
 
