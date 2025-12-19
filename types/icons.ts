@@ -1,4 +1,4 @@
-// src/types/Icon.ts
+
 export type IconName =
   | "alarm-outline"
   | "barbell-outline"

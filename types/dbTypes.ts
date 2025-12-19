@@ -11,13 +11,35 @@ export type Habit = {
   order?: number; // order for sorting habits
 };
 
-export type HabitEntry = {
+// export type HabitEntry = {
+//   id: number;
+//   habit_id: number;
+//   date: string; // YYYY-MM-DD
+//   status: 0 | 1; // checked or unchecked
+//   created_at: string;
+//   updated_at?: string;
+// };
+export type HabitEntryRow = {
   id: number;
   habit_id: number;
-  date: string; // YYYY-MM-DD
-  status: 0 | 1; // checked or unchecked
+  date: string;
+  status: number; // 0 | 1 but SQLite will return number
   created_at: string;
-  updated_at?: string;
+  updated_at: string | null;
+};
+
+export type HeatmapRow = {
+  id: number;
+  habit_id: number;
+  week_start: string; // YYYY-MM-DD
+  statuses: 0 | 1 | null; // JSON string or null
+};
+export type ParsedHeatmapEntry = {
+  week_start: string;
+  statuses: string | null;
+};
+export type HabitWithWeeklyEntries = Habit & {
+  entries: ParsedHeatmapEntry[];
 };
 
 export type User = {

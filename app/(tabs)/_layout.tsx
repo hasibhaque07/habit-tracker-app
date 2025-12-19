@@ -10,7 +10,6 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          // backgroundColor: "#1C1C1C",
           backgroundColor: Colors.darkGray,
           height: 50,
           borderWidth: 0.5,
@@ -31,8 +30,8 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name="home-outline"
-              size={24}
-              color={focused ? Colors.white : Colors.lightGray}
+              size={26}
+              color={focused ? Colors.white : Colors.mediumGray}
             />
           ),
         }}
@@ -45,7 +44,7 @@ export default function TabLayout() {
             <Ionicons
               name="bar-chart-outline"
               size={24}
-              color={focused ? Colors.white : Colors.lightGray}
+              color={focused ? Colors.white : Colors.mediumGray}
             />
           ),
         }}

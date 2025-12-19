@@ -1,16 +1,19 @@
 import { Stack } from "expo-router";
+import { StatusBar } from "react-native";
 
 export default function OnboardingLayout() {
   return (
-    // <Stack screenOptions={{ headerShown: false }}>
-    <Stack
-      screenOptions={{
-        contentStyle: { backgroundColor: "#000000" }, // Add this - matches your black theme
-      }}
-    >
-      <Stack.Screen name="welcome" />
-      <Stack.Screen name="onboarding" />
-      <Stack.Screen name="pro" />
-    </Stack>
+    <>
+      <StatusBar hidden={true} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#171717" },
+          animation: "none", 
+        }}
+      >
+        <Stack.Screen name="welcome" />
+      </Stack>
+    </>
   );
 }

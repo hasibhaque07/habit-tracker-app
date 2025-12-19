@@ -6,8 +6,10 @@ import {
   useHabitEntriesByPeriod,
 } from "@/hooks/useHabitEntriesByPeriod";
 import { useHabits } from "@/hooks/useHabits";
-import { useToggleHabitEntry } from "@/hooks/useToggleHabitEntry";
+import { useToggleHabitEntry } from "@/hooks/useToggle";
 import { Habit } from "@/types/dbTypes";
+import Colors from "@/utils/colors";
+import { getDateInfo } from "@/utils/dateUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 
@@ -38,6 +40,8 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
     handleConfirm,
   } = useHabitActions();
 
+  const t = getDateInfo();
+
   const { archiveHabit, deleteHabit } = useHabits();
   const { toggleCheck } = useToggleHabitEntry();
 
@@ -59,6 +63,8 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
   // Type assertion to ensure TypeScript knows this is HabitWithEntry[]
   const habitsData: HabitWithEntry[] =
     (habitsWithEntries as HabitWithEntry[]) || [];
+
+  //console.log("Data", JSON.stringify(habitsData, null, 2));
 
   const handleArchive = (habit: Habit) => {
     archiveHabit(habit.id);
@@ -82,7 +88,7 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
   // Handle checkbox press (only checkbox, not the whole card)
   const handleCheckboxPress = (habit: HabitWithEntry, e: any) => {
     e.stopPropagation(); // Prevent card press
-    toggleCheck(habit.id); // Toggle today's entry
+    toggleCheck(habit.id, t.date, habit.entry_status); // Toggle today's entry
   };
 
   // Handle card press (for navigation - to be implemented later)
@@ -118,21 +124,33 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
         data={habitsData}
         keyExtractor={(item, index) => `habit-${item.id}-${index}`}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 30 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => {
           const isChecked = item.entry_status === 1;
-          const checkboxColor = isChecked ? item.color || "#fff" : "#404040"; // Gray when unchecked
-          const checkmarkColor = isChecked ? "white" : "#666666"; // Darker gray checkmark when unchecked
+          const checkboxColor = isChecked
+            ? item.color || "#fff"
+            : Colors.checkBoxBackground; // Gray when unchecked
+          const checkmarkColor = isChecked ? "white" : Colors.checkMarkColor; // Darker gray checkmark when unchecked
 
           return (
-            <View className="flex-row items-center justify-between bg-neutral-900 rounded-2xl p-4 mb-4">
+            <View
+              className="flex-row items-center justify-between rounded-2xl  p-4 mb-4"
+              style={{
+                backgroundColor: Colors.habitCardBackground,
+                borderWidth: 1,
+                borderColor: Colors.borderColor,
+              }}
+            >
               <TouchableOpacity
                 onPress={() => handleCardPress(item)}
                 onLongPress={() => handleCardLongPress(item)}
                 className="flex-row items-center flex-1"
                 activeOpacity={0.7}
               >
-                <View className="bg-neutral-800 rounded-2xl p-4 mr-3">
+                <View
+                  className="bg-neutral-800 rounded-2xl p-4 mr-3"
+                  style={{ backgroundColor: Colors.habitIconBackground }}
+                >
                   <Ionicons
                     name={(item.icon as any) ?? "help-outline"}
                     size={24}
@@ -153,7 +171,7 @@ export default function TodayView({ habits: _habits }: TodayViewProps) {
                 }}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="checkmark" size={18} color={checkmarkColor} />
+                <Ionicons name="checkmark" size={25} color={checkmarkColor} />
               </Pressable>
             </View>
           );

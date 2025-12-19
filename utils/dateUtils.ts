@@ -7,7 +7,7 @@ export type DateInfo = {
   // Basic date info
   date: string; // "YYYY-MM-DD"
   weekday: number; // 1–7 (Mon–Sun)
-  isoTimestamp: string | null; // Changed to allow null
+  isoTimestamp: string | null; 
 
   // Week info
   weekStart: string; // Monday
@@ -27,7 +27,7 @@ export function getDateInfo(): DateInfo {
 
   const date = now.toFormat("yyyy-MM-dd");
   const weekday = now.weekday; // 1–7 (Mon–Sun)
-  const isoTimestamp = now.toISO(); // Can be null
+  const isoTimestamp = now.toISO(); 
 
   // Calculate week start (Monday) and end (Sunday)
   // Luxon's weekday: 1=Monday, 7=Sunday
@@ -78,13 +78,4 @@ export function getWeekdayName(date: string): string {
   return dt.toFormat("EEE"); // Returns "Mon", "Tue", etc.
 }
 
-// how to use it
-// import { getDateInfo } from "@/utils/dateUtils";
 
-// const t = getDateInfo();
-
-// console.log(t.date);        // "2025-11-17"
-// console.log(t.weekday);     // 1–7
-// console.log(t.weekStart);   // "2025-11-17" (Monday)
-// console.log(t.weekEnd);     // "2025-11-23" (Sunday)
-// console.log(t.isoTimestamp);
