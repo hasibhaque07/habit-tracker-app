@@ -1,10 +1,14 @@
-import { storage } from "@/services/storage";
+import { useAuthStore } from "@/services/authStorage";
+import { router } from "expo-router";
 import React from "react";
 import { Button, Text, View } from "react-native";
 
 const analytics = () => {
+  const { resetOnboarding } = useAuthStore();
   const handleFinish = async () => {
-    await storage.setOnboardingUnseen();
+    //await storage.setOnboardingUnseen();
+    resetOnboarding();
+    router.replace("/(onboarding)/welcome");
   };
   return (
     <View className="flex-1 bg-neutral-900 justify-center items-center">

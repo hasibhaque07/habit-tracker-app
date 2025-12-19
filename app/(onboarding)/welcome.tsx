@@ -1,4 +1,4 @@
-import { storage } from "@/services/storage";
+import { useAuthStore } from "@/services/authStorage";
 import { router } from "expo-router";
 import React from "react";
 import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
@@ -7,8 +7,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 export default function WelcomeScreen() {
+  const { completedOnboarding } = useAuthStore();
+
   const onGetStarted = async () => {
-    await storage.setOnboardingSeen();
+    completedOnboarding();
+    //await storage.setOnboardingSeen();
     router.replace("/(tabs)"); // Go to main app
   };
 
