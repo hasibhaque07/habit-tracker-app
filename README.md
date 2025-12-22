@@ -1,14 +1,10 @@
-<!-- Hero Image -->
-
-<!-- ![Habit Tracker Demo](./assets/demo/habit-tracker.gif) -->
 <img src="./assets/demo/cover-img.png"  />
 
-# Habit Tracker App
+# Open-Source Habit Tracking App
 
-A clean, minimal, open-source habit tracker built to help users build consistency over time.  
-Focused on simplicity, visual progress, and a distraction-free experience.
+A simple and minimal habit tracker app built to help people stay consistent with their daily habits. The app focuses on a clean experience with visual progress tracking, so users can easily see how they’re doing over time.
 
-Built in public and open for learning, contributions, and customization.
+It is built with Expo and React Native, and uses SQLite for local data storage, so all habit data is saved directly on the device and works fully offline.
 
 ---
 
@@ -18,56 +14,31 @@ Built in public and open for learning, contributions, and customization.
   <img src="./assets/demo/habit-tracker.gif" width="240" />
 </p>
 
-<!-- <table>
-  <tr>
-  <td><img src="./assets/demo/habit-tracker.gif" width="180" /></td>
-    <td><img src="./assets/demo/1.jpg" width="200" /></td>
-    <td><img src="./assets/demo/2.jpg" width="200" /></td>
-    <td><img src="./assets/demo/3.jpg" width="200" /></td>
-  </tr>
-  <tr>
-  <td><img src="./assets/demo/4.jpg" width="200" /></td>
-    <td><img src="./assets/demo/5.jpg" width="200" /></td>
-    <td><img src="./assets/demo/6.jpg" width="200" /></td>
-    <td><img src="./assets/demo/7.jpg" width="200" /></td>
-
-  </tr>
-
-</table> -->
-
-<!-- ![Onboarding](./assets/demo/1.jpg)
-![Habits](./assets/demo/2.jpg)
-![Progress](./assets/demo/3.jpg) -->
-
 ---
 
 ## Tech Stack
 
 - **Expo** (React Native)
 - **TypeScript**
-- **Zustand** for state management
-- **AsyncStorage** for local persistence
-- **Expo Router**
-- **React Native Reanimated**
+- **SQLite** for local data storage
 
 ---
 
 ## Features
 
 - ➕ Create and manage habits
-- 📊 Visual progress tracking  
-  _(daily, weekly, monthly, yearly)_
+- 📊 Visual progress tracking _(daily, weekly, monthly, yearly)_
 - 💾 Data saved locally on device
 - 🚀 Smooth onboarding flow
 - ✏️ Edit, reorder, delete, and archive habits
-- 🌙 Dark mode only (intentional design choice)
+- 🌙 Dark mode only
 - ⚡ Fast, lightweight, and offline-first
 
 ---
 
 ## Planned Features
 
-- 📈 Analytics dashboard
+- 📈 Advanced Analytics
 - 💳 Payments & subscriptions with RevenueCat
 - 📤 Export / Import habit data
 - 🧩 Home screen widgets
@@ -81,21 +52,10 @@ If you’re interested in:
 
 - Implementing **planned (advanced) features**
 - **Customizing** this app for your product or startup
-- Building a **similar app from scratch**
+- Building an **app from scratch**
 
 You can reach out to me at:
 
-📧 **your-email@example.com**
+📧 **hasibhaque07@gmail.com**
 
-I’m open to freelance work, collaborations, and long-term projects.
-
----
-
-## Getting Started
-
-```bash
-git clone https://github.com/your-username/habit-tracker.git
-cd habit-tracker
-npm install
-npm run start
-```
+I’m open to collaborations, and long-term projects.
