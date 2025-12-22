@@ -16,14 +16,12 @@ Built in public and open for learning, contributions, and customization.
 
 <table>
   <tr>
-    <td><img src="./assets/demo/habit-tracker.gif" width="200" /></td>
     <td><img src="./assets/demo/1.jpg" width="200" /></td>
     <td><img src="./assets/demo/2.jpg" width="200" /></td>
     <td><img src="./assets/demo/3.jpg" width="200" /></td>
-    
+    <td><img src="./assets/demo/4.jpg" width="200" /></td>
   </tr>
   <tr>
-    <td><img src="./assets/demo/4.jpg" width="200" /></td>
     <td><img src="./assets/demo/5.jpg" width="200" /></td>
     <td><img src="./assets/demo/6.jpg" width="200" /></td>
     <td><img src="./assets/demo/7.jpg" width="200" /></td>
