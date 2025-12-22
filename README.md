@@ -20,7 +20,7 @@ Built in public and open for learning, contributions, and customization.
     <td><img src="./assets/demo/1.jpg" width="200" /></td>
     <td><img src="./assets/demo/2.jpg" width="200" /></td>
     <td><img src="./assets/demo/3.jpg" width="200" /></td>
-    <td><img src="./assets/demo/4.jpg" width="200" /></td>
+    
   </tr>
   <tr>
     <td><img src="./assets/demo/4.jpg" width="200" /></td>
