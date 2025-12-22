@@ -1,50 +1,79 @@
-# Welcome to your Expo app 👋
+<!-- Hero Image -->
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Habit Tracker Demo](./assets/demo/habit-tracker.gif)
 
-## Get started
+# Habit Tracker App
 
-1. Install dependencies
+A clean, minimal, open-source habit tracker built to help users build consistency over time.  
+Focused on simplicity, visual progress, and a distraction-free experience.
 
-   ```bash
-   npm install
-   ```
+Built in public and open for learning, contributions, and customization.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Screenshots
 
-In the output, you'll find options to open the app in a
+![Onboarding](./assets/demo/1.jpg)
+![Habits](./assets/demo/2.jpg)
+![Progress](./assets/demo/3.jpg)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Tech Stack
 
-## Get a fresh project
+- **Expo** (React Native)
+- **TypeScript**
+- **Zustand** for state management
+- **AsyncStorage** for local persistence
+- **Expo Router**
+- **React Native Reanimated**
 
-When you're ready, run:
+---
+
+## Features
+
+- ➕ Create and manage habits
+- 📊 Visual progress tracking  
+  _(daily, weekly, monthly, yearly)_
+- 💾 Data saved locally on device
+- 🚀 Smooth onboarding flow
+- ✏️ Edit, reorder, delete, and archive habits
+- 🌙 Dark mode only (intentional design choice)
+- ⚡ Fast, lightweight, and offline-first
+
+---
+
+## Planned Features
+
+- 📈 Analytics dashboard
+- 💳 Payments & subscriptions with RevenueCat
+- 📤 Export / Import habit data
+- 🧩 Home screen widgets
+- 🎨 Theme customization
+
+---
+
+## Custom Features & Work
+
+If you’re interested in:
+
+- Implementing **planned (advanced) features**
+- **Customizing** this app for your product or startup
+- Building a **similar app from scratch**
+
+You can reach out to me at:
+
+📧 **your-email@example.com**
+
+I’m open to freelance work, collaborations, and long-term projects.
+
+---
+
+## Getting Started
 
 ```bash
-npm run reset-project
+git clone https://github.com/your-username/habit-tracker.git
+cd habit-tracker
+npm install
+npm run start
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
