@@ -3,10 +3,9 @@ import { router } from "expo-router";
 import React from "react";
 import { Button, Text, View } from "react-native";
 
-const analytics = () => {
+const AnalyticsScreen = () => {
   const { resetOnboarding } = useAuthStore();
   const handleFinish = async () => {
-    //await storage.setOnboardingUnseen();
     resetOnboarding();
     router.replace("/(onboarding)/welcome");
   };
@@ -18,4 +17,4 @@ const analytics = () => {
   );
 };
 
-export default analytics;
+export default AnalyticsScreen;

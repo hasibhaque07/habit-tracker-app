@@ -1,50 +1,61 @@
-# Welcome to your Expo app 👋
+<img src="./assets/demo/cover-img.png"  />
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Open-Source Habit Tracking App
 
-## Get started
+A simple and minimal habit tracker app built to help people stay consistent with their daily habits. The app focuses on a clean experience with visual progress tracking, so users can easily see how they’re doing over time.
 
-1. Install dependencies
+It is built with Expo and React Native, and uses SQLite for local data storage, so all habit data is saved directly on the device and works fully offline.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Screenshots
 
-   ```bash
-   npx expo start
-   ```
+<p align="center">
+  <img src="./assets/demo/habit-tracker.gif" width="240" />
+</p>
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Expo** (React Native)
+- **TypeScript**
+- **SQLite** for local data storage
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Features
 
-```bash
-npm run reset-project
-```
+- ➕ Create and manage habits
+- 📊 Visual progress tracking _(daily, weekly, monthly, yearly)_
+- 💾 Data saved locally on device
+- 🚀 Smooth onboarding flow
+- ✏️ Edit, reorder, delete, and archive habits
+- 🌙 Dark mode only
+- ⚡ Fast, lightweight, and offline-first
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Planned Features
 
-To learn more about developing your project with Expo, look at the following resources:
+- 📈 Advanced Analytics
+- 💳 Payments & subscriptions with RevenueCat
+- 📤 Export / Import habit data
+- 🧩 Home screen widgets
+- 🎨 Theme customization
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Custom Features & Work
 
-Join our community of developers creating universal apps.
+If you’re interested in:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Implementing **planned (advanced) features**
+- **Customizing** this app for your product or startup
+- Building an **app from scratch**
+
+You can reach out to me at:
+
+📧 **hasibhaque07@gmail.com**
+
+I’m open to collaborations, and long-term projects.

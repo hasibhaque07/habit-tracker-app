@@ -1,4 +1,3 @@
-
 import HabitIcon from "@/components/HabitIcon";
 import { useHabits } from "@/hooks/useHabits";
 import { Habit } from "@/types/dbTypes";
@@ -117,4 +116,3 @@ export default function ReorderScreen() {
     </View>
   );
 }
-
