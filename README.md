@@ -14,7 +14,7 @@ It is built with Expo and React Native, and uses SQLite for local data storage, 
   <img src="./assets/demo/habit-tracker.gif" width="240" />
 </p>
 
-🎥 **Watch the app demo on YouTube:** https://youtu.be/Uy74FxBnQEk?si=S8eZGENTXDvt22Zb
+🎥 [Watch demo video](https://youtu.be/Uy74FxBnQEk?si=S8eZGENTXDvt22Zb)
 
 ---
 
