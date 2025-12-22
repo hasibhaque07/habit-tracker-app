@@ -14,7 +14,9 @@ Built in public and open for learning, contributions, and customization.
 
 ## Screenshots
 
-<img src="./assets/demo/habit-tracker.gif" width="230" />
+<p align="center">
+  <img src="./assets/demo/habit-tracker.gif" width="240" />
+</p>
 
 <!-- <table>
   <tr>
