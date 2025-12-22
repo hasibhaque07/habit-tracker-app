@@ -14,7 +14,9 @@ Built in public and open for learning, contributions, and customization.
 
 ## Screenshots
 
-<table>
+<img src="./assets/demo/habit-tracker.gif" width="230" />
+
+<!-- <table>
   <tr>
   <td><img src="./assets/demo/habit-tracker.gif" width="180" /></td>
     <td><img src="./assets/demo/1.jpg" width="200" /></td>
@@ -26,10 +28,10 @@ Built in public and open for learning, contributions, and customization.
     <td><img src="./assets/demo/5.jpg" width="200" /></td>
     <td><img src="./assets/demo/6.jpg" width="200" /></td>
     <td><img src="./assets/demo/7.jpg" width="200" /></td>
-    
+
   </tr>
-  
-</table>
+
+</table> -->
 
 <!-- ![Onboarding](./assets/demo/1.jpg)
 ![Habits](./assets/demo/2.jpg)
