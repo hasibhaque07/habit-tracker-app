@@ -1,8 +1,8 @@
 <img src="./assets/demo/cover-img.png"  />
 
-# Open-Source Habit Tracking App
+# Open-Source Habit Tracker App
 
-A simple and minimal habit tracker app built to help people stay consistent with their daily habits. The app focuses on a clean experience with visual progress tracking, so users can easily see how they’re doing over time.
+A simple and minimal open-source habit tracker app built to help people stay consistent with their daily habits.
 
 It is built with Expo and React Native, and uses SQLite for local data storage, so all habit data is saved directly on the device and works fully offline.
 
