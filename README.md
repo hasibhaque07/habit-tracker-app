@@ -1,7 +1,7 @@
 <!-- Hero Image -->
 
 <!-- ![Habit Tracker Demo](./assets/demo/habit-tracker.gif) -->
-<img src="./assets/demo/habit-tracker.gif" width="200" />
+<img src="./assets/demo/cover-img.png"  />
 
 # Habit Tracker App
 
@@ -16,7 +16,7 @@ Built in public and open for learning, contributions, and customization.
 
 <table>
   <tr>
-  <td><img src="./assets/demo/habit-tracker.gif" width="200" /></td>
+  <td><img src="./assets/demo/habit-tracker.gif" width="180" /></td>
     <td><img src="./assets/demo/1.jpg" width="200" /></td>
     <td><img src="./assets/demo/2.jpg" width="200" /></td>
     <td><img src="./assets/demo/3.jpg" width="200" /></td>
