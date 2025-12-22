@@ -1,7 +1,7 @@
 <!-- Hero Image -->
 
 <!-- ![Habit Tracker Demo](./assets/demo/habit-tracker.gif) -->
-<img src="./assets/demo/habit-tracker.gif" width="500" />
+<img src="./assets/demo/habit-tracker.gif" width="200" />
 
 # Habit Tracker App
 
