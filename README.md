@@ -25,6 +25,7 @@ Built in public and open for learning, contributions, and customization.
     <td><img src="./assets/demo/5.jpg" width="200" /></td>
     <td><img src="./assets/demo/6.jpg" width="200" /></td>
     <td><img src="./assets/demo/7.jpg" width="200" /></td>
+    <img src="./assets/demo/habit-tracker.gif" width="200" />
   </tr>
   
 </table>
