@@ -8,13 +8,10 @@ import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-
-
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-
-   const {hasCompletedOnboarding, _hasHydrated } = useAuthStore();
+  const { hasCompletedOnboarding, _hasHydrated } = useAuthStore();
 
   useEffect(() => {
     if (_hasHydrated) {
@@ -25,7 +22,7 @@ export default function RootLayout() {
   if (!_hasHydrated) {
     return null;
   }
-  
+
   const queryClient = new QueryClient();
 
   return (
@@ -46,10 +43,10 @@ export default function RootLayout() {
             }}
           >
             <Stack.Protected guard={!hasCompletedOnboarding}>
-            <Stack.Screen
-              name="(onboarding)"
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="(onboarding)"
+                options={{ headerShown: false }}
+              />
             </Stack.Protected>
 
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
