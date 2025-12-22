@@ -1,6 +1,7 @@
 <!-- Hero Image -->
 
-![Habit Tracker Demo](./assets/demo/habit-tracker.gif)
+<!-- ![Habit Tracker Demo](./assets/demo/habit-tracker.gif) -->
+<img src="./assets/demo/habit-tracker.gif" width="500" />
 
 # Habit Tracker App
 
@@ -13,9 +14,25 @@ Built in public and open for learning, contributions, and customization.
 
 ## Screenshots
 
-![Onboarding](./assets/demo/1.jpg)
+<table>
+  <tr>
+    <td><img src="./assets/demo/1.jpg" width="200" /></td>
+    <td><img src="./assets/demo/2.jpg" width="200" /></td>
+    <td><img src="./assets/demo/3.jpg" width="200" /></td>
+    <td><img src="./assets/demo/4.jpg" width="200" /></td>
+    
+  </tr>
+  <!-- <tr>
+    <td><img src="./assets/screenshots/s5.png" width="200" /></td>
+    <td><img src="./assets/screenshots/s6.png" width="200" /></td>
+    <td><img src="./assets/screenshots/s7.png" width="200" /></td>
+    <td><img src="./assets/screenshots/s8.png" width="200" /></td>
+  </tr> -->
+</table>
+
+<!-- ![Onboarding](./assets/demo/1.jpg)
 ![Habits](./assets/demo/2.jpg)
-![Progress](./assets/demo/3.jpg)
+![Progress](./assets/demo/3.jpg) -->
 
 ---
 
